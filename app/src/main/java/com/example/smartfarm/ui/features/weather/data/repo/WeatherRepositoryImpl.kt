@@ -1,6 +1,7 @@
 package com.example.smartfarm.ui.features.weather.data.repo
 
 import com.example.smartfarm.BuildConfig
+import com.example.smartfarm.ui.features.weather.data.mapper.toWeatherData
 import com.example.smartfarm.ui.features.weather.data.remote.ApiResult
 import com.example.smartfarm.ui.features.weather.data.remote.WeatherApiService
 import com.example.smartfarm.ui.features.weather.data.remote.safeApiCall
