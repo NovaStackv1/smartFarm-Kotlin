@@ -24,6 +24,14 @@ sealed class BottomRoutes(
     val route: String
 ){
     object Home : BottomRoutes("Home", Icons.Default.Home, Routes.Home.route)
-    object Weather : BottomRoutes("Dashboard", Icons.Default.Home, Routes.Weather.route)
+    object Weather : BottomRoutes("Weather", Icons.Default.Home, Routes.Weather.route)
     object Expenses : BottomRoutes("Expenses", Icons.Default.Home, Routes.Expenses.route)
+
+    companion object{
+        val bottomItem = listOf(
+            Home,
+            Weather,
+            Expenses
+        )
+    }
 }

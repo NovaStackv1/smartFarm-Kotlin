@@ -9,6 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
+import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
+import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
+import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 
 @Composable
 fun NavGraph(
@@ -16,11 +19,17 @@ fun NavGraph(
     modifier: Modifier = Modifier
 ) {
 
-    val startRoute = Routes.Login.route
+    val startRoute = Routes.Home.route
 
 
     Scaffold (
         containerColor = MaterialTheme.colorScheme.background,
+
+        bottomBar = {
+            BottomBarNav(
+                navController = navController
+            )
+        }
     ){ paddingValues ->
 
         NavHost(
@@ -30,9 +39,24 @@ fun NavGraph(
         ) {
             composable (Routes.Login.route){
                 LoginScreen(
-                    onNavigateToDashboard = {
+                    onNavigateToHome = {
+                        navController.navigate(Routes.Home.route)
                     }
                 )
+
+            }
+
+            composable(Routes.Home.route){
+                HomeScreen()
+            }
+
+            composable(Routes.Weather.route){
+                WeatherScreen()
+
+            }
+
+            composable (Routes.Expenses.route){
+                FinanceScreen()
 
             }
 
