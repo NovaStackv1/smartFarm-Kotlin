@@ -51,7 +51,11 @@ fun NavGraph(
             }
 
             composable(Routes.Weather.route){
-                WeatherScreen()
+                WeatherScreen(
+                    onNavigateBack = {
+                        navController.navigateUp()
+                    }
+                )
 
             }
 
