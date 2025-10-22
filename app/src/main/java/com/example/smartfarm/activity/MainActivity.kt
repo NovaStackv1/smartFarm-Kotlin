@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.smartfarm.navigation.NavGraph
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.theme.NegativeRed
 import com.example.smartfarm.ui.theme.PositiveGreen
@@ -31,75 +33,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
+            val navController = rememberNavController()
+
             SmartFarmTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(
-                        onNavigateToDashboard = { /* Handle navigation to dashboard */ },
-                        modifier = Modifier.padding(innerPadding))
-                }
+                NavGraph(
+                    navController = navController
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-        val profit = 15000 // Replace with your actual profit value
-
-
-        // For cards
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            // Card content
-        }
-
-// For buttons
-        Button(
-            onClick = { /* action */ },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            shape = MaterialTheme.shapes.large
-        ) {
-            Text("Button")
-        }
-
-// For text
-        Text(
-            text = "Hello SmartFarm",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-// For profit/loss indicators
-        Text(
-            text = "KES 15,000",
-            color = if (profit >= 0) PositiveGreen else NegativeRed,
-            style = MaterialTheme.typography.titleMedium
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SmartFarmTheme {
-        Greeting("Android")
     }
 }
