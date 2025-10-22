@@ -4,33 +4,83 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = GreenLight,
     onPrimary = Color.White,
-    onSecondary = Color.White,
+    primaryContainer = GreenLight.copy(alpha = 0.2f),
+    onPrimaryContainer = GreenLight,
+
+    secondary = AmberLight,
+    onSecondary = Color.Black,
+    secondaryContainer = AmberLight.copy(alpha = 0.2f),
+    onSecondaryContainer = AmberLight,
+
+    tertiary = InfoBlue,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+
+    background = BackgroundLight,
+    onBackground = OnBackgroundLight,
+
+    surface = SurfaceLight,
+    onSurface = OnSurfaceLight,
+
+    surfaceVariant = SurfaceLight,
+    onSurfaceVariant = OnSurfaceLight,
+
+    outline = OutlineLight,
+    outlineVariant = OutlineLight.copy(alpha = 0.5f),
+
+    error = NegativeRed,
+    onError = Color.White,
+
+    // Custom additional colors
+    scrim = Color.Black.copy(alpha = 0.5f)
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = GreenDark,
+    onPrimary = Color.Black,
+    primaryContainer = GreenDark.copy(alpha = 0.2f),
+    onPrimaryContainer = GreenDark,
+
+    secondary = AmberDark,
+    onSecondary = Color.Black,
+    secondaryContainer = AmberDark.copy(alpha = 0.2f),
+    onSecondaryContainer = AmberDark,
+
+    tertiary = InfoBlue,
+    onTertiary = Color.Black,
+
+    background = BackgroundDark,
+    onBackground = OnBackgroundDark,
+
+    surface = SurfaceDark,
+    onSurface = OnSurfaceDark,
+
+    surfaceVariant = SurfaceDark,
+    onSurfaceVariant = OnSurfaceDark,
+
+    outline = OutlineDark,
+    outlineVariant = OutlineDark.copy(alpha = 0.5f),
+
+    error = NegativeRed,
+    onError = Color.Black,
+
+    // Custom additional colors
+    scrim = Color.Black.copy(alpha = 0.5f)
 )
 
 @Composable
@@ -50,9 +100,20 @@ fun SmartFarmTheme(
         else -> LightColorScheme
     }
 
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }
