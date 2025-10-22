@@ -2,7 +2,11 @@ package com.example.smartfarm.ui.features.weather.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smartfarm.ui.features.weather.data.remote.ApiResult
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
+import com.example.smartfarm.ui.features.weather.domain.usecase.GetCurrentLocationUseCase
+import com.example.smartfarm.ui.features.weather.domain.usecase.GetWeatherByCoordinatesUseCase
+import com.example.smartfarm.ui.features.weather.domain.usecase.GetWeatherByLocationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
