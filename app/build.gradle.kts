@@ -76,9 +76,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-//    implementation("com.google.firebase:firebase-auth-ktx")
-//    implementation("com.google.android.gms:play-services-auth:20.7.0")
-
+    // Compose Animation
+    implementation("androidx.compose.animation:animation:1.9.3")
     // for Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.4.0")
 
@@ -112,10 +111,21 @@ dependencies {
 
     // Modern Networking Stack
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.squareup.okhttp3:okhttp:5.2.1")
     implementation("com.squareup.okhttp3:logging-interceptor:5.2.1")
 
+    // Gson
+    implementation("com.google.code.gson:gson:2.13.2")
+
     // Coroutines
-    //implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // SwipeRefresh for Compose
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
 
 }
