@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.theme.NegativeRed
 import com.example.smartfarm.ui.theme.PositiveGreen
 import com.example.smartfarm.ui.theme.SmartFarmTheme
@@ -32,10 +33,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartFarmTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    LoginScreen(
+                        onNavigateToDashboard = { /* Handle navigation to dashboard */ },
+                        modifier = Modifier.padding(innerPadding))
                 }
             }
         }
