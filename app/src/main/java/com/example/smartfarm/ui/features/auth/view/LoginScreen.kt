@@ -20,20 +20,20 @@ import com.google.android.gms.common.api.ApiException
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToDashboard: () -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
 
     // Handle navigation events
-    LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
-            when (event) {
-                is NavigationEvent.NavigateToDashboard -> onNavigateToDashboard()
-            }
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.navigationEvent.collect { event ->
+//            when (event) {
+//                is NavigationEvent.NavigateToDashboard -> onNavigateToDashboard()
+//            }
+//        }
+//    }
 
     // Google Sign-In launcher
     val launcher = rememberLauncherForActivityResult(
@@ -62,8 +62,9 @@ fun LoginScreen(
     LoginContent(
         authState = authState,
         onGoogleSignInClick = {
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            launcher.launch(googleSignInClient.signInIntent)
+            onNavigateToHome()
+            //val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            //launcher.launch(googleSignInClient.signInIntent)
         },
         onDismissError = { viewModel.clearError() }
     )
