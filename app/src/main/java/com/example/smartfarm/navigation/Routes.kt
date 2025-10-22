@@ -11,6 +11,8 @@ sealed class Routes(
     object Login : Routes("login", false)
     object Home : Routes("home", true)
     object Dashboard : Routes("dashboard", true)
+    object Expenses : Routes("expenses", true)
+    object Weather : Routes("weather", true)
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -22,5 +24,6 @@ sealed class BottomRoutes(
     val route: String
 ){
     object Home : BottomRoutes("Home", Icons.Default.Home, Routes.Home.route)
-    object Dashboard : BottomRoutes("Dashboard", Icons.Default.Home, Routes.Dashboard.route)
+    object Weather : BottomRoutes("Dashboard", Icons.Default.Home, Routes.Weather.route)
+    object Expenses : BottomRoutes("Expenses", Icons.Default.Home, Routes.Expenses.route)
 }
