@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +22,19 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Load API key from keys.properties
+        val keysPropertiesFile = rootProject.file("keys.properties")
+        val keysProperties = Properties()
+        if (keysPropertiesFile.exists()) {
+            keysProperties.load(FileInputStream(keysPropertiesFile))
+        }
+
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"${keysProperties.getProperty("WEATHER_API_KEY", "")}\""
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -36,7 +52,7 @@ android {
 //    compileOptions {
 //        sourceCompatibility = JavaVersion.VERSION_17  // Changed from 11 to 17
 //        targetCompatibility = JavaVersion.VERSION_17  // Changed from 11 to 17
-        //isCoreLibraryDesugaringEnabled = true
+    //isCoreLibraryDesugaringEnabled = true
 //    }
 
     kotlin {
@@ -50,9 +66,6 @@ android {
 }
 
 dependencies {
-    // Desugaring library
-    //coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,12 +74,14 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
+
+    // Firebase BoM and Firebase Auth (single place)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -76,40 +91,37 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     // Compose Animation
     implementation("androidx.compose.animation:animation:1.9.3")
-    // for Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    //implementation("com.google.android.gms:play-services-auth:21.4.0")
+
+    // for Google Sign-In (from `jude` branch)
+    //implementation("com.google.android.gms:play-services-auth:21.2.0")
+
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-
-    //coil
+    // coil
     implementation("io.coil-kt:coil-compose:2.7.0")
 
-    //extend icons
+    // extend icons
     implementation("androidx.compose.material:material-icons-core:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.57.2")
     ksp("com.google.dagger:hilt-compiler:2.57.2")
-    //implementation("com.google.devtools.ksp:symbol-processing-api:2.2.20-2.0.4")
 
     // Hilt Navigation Compose (recommended for Compose + Hilt)
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     // DataStore
-    implementation ("androidx.datastore:datastore-preferences:1.1.7")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.datastore:datastore-preferences-core:1.1.7")
 
     // Local Database (Room) - for offline storage
     implementation("androidx.room:room-runtime:2.8.2")
     implementation("androidx.room:room-ktx:2.8.2")
-    // KSP runs Room's codegen
     ksp("androidx.room:room-compiler:2.8.2")
 
     // Timber for logging
