@@ -36,15 +36,22 @@ fun FinanceScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Farm Finances",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                    ) {
+                        Text(
+                            text = "Farm Finances",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                modifier = Modifier.height(56.dp)
             )
         },
         floatingActionButton = {
