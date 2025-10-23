@@ -1,71 +1,52 @@
 package com.example.smartfarm.ui.features.auth.view
 
-import android.app.Activity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.smartfarm.ui.features.auth.components.LoginContent
 import com.example.smartfarm.ui.features.auth.viewModel.LoginViewModel
 import com.example.smartfarm.ui.features.auth.viewModel.NavigationEvent
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val authState by viewModel.authState.collectAsState()
+    val authState by loginViewModel.authState.collectAsState()
+
+    // Get the activity context safely
+    val activity = LocalContext.current as? ComponentActivity
 
     // Handle navigation events
-//    LaunchedEffect(Unit) {
-//        viewModel.navigationEvent.collect { event ->
-//            when (event) {
-//                is NavigationEvent.NavigateToDashboard -> onNavigateToDashboard()
-//            }
-//        }
-//    }
-
-    // Google Sign-In launcher
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                viewModel.signInWithGoogle(account)
-            } catch (e: ApiException) {
-                // Handle error silently or show snackbar
+    LaunchedEffect(Unit) {
+        loginViewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.NavigateToDashboard -> onNavigateToHome()
             }
         }
     }
 
-    // Configure Google Sign-In
-    val token = "YOUR_WEB_CLIENT_ID" // Replace with your actual Web Client ID from Firebase Console
-    val gso = remember {
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(token)
-            .requestEmail()
-            .build()
-    }
 
     LoginContent(
         authState = authState,
         onGoogleSignInClick = {
-            onNavigateToHome()
-            //val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            //launcher.launch(googleSignInClient.signInIntent)
+            // Only proceed if we have an Activity context
+            if (activity != null) {
+                loginViewModel.signInWithGoogle(activity)
+            } else {
+                // Fallback: show error or use application context (may still fail)
+                loginViewModel.signInWithGoogle(context)
+            }
         },
-        onDismissError = { viewModel.clearError() }
+        onDismissError = { loginViewModel.clearError() }
     )
 }

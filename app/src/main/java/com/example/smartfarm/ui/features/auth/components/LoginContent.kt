@@ -9,6 +9,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -37,10 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.smartfarm.R
 import com.example.smartfarm.ui.features.auth.domain.model.AuthState
 
 @Composable
@@ -80,6 +85,7 @@ fun LoginContent(
 
     // Show error snackbar
     val snackbarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(authState) {
         if (authState is AuthState.Error) {
             snackbarHostState.showSnackbar(
@@ -92,7 +98,15 @@ fun LoginContent(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
+            }
+        }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -155,6 +169,15 @@ fun LoginContent(
                             fontSize = 80.sp,
                             modifier = Modifier.offset(y = (-10).dp)
                         )
+
+//                        Image(
+//                            painter = painterResource(id = R.drawable.farm_illustration),
+//                            contentDescription = null,
+//                            modifier = Modifier.size(260.dp),
+//                            alignment = Alignment.Center,
+//                            contentScale = ContentScale.Crop,
+//
+//                        )
                     }
                 }
                 

@@ -21,16 +21,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
-        return UserPreferences(context)
-    }
+    fun provideUserPreferences(
+        @ApplicationContext context: Context
+    ): UserPreferences = UserPreferences(context)
 
     @Provides
     @Singleton
     fun provideAuthRepository(
+        //@ApplicationContext context: Context,
         firebaseAuth: FirebaseAuth,
         userPreferences: UserPreferences
-    ): AuthRepository {
-        return AuthRepository(firebaseAuth, userPreferences)
-    }
+    ): AuthRepository = AuthRepository( firebaseAuth, userPreferences)
 }
