@@ -99,6 +99,8 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.57.2")
     //implementation("com.google.devtools.ksp:symbol-processing-api:2.2.20-2.0.4")
 
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+
     // Hilt Navigation Compose (recommended for Compose + Hilt)
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 

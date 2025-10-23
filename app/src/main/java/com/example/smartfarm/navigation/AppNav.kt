@@ -1,5 +1,7 @@
 package com.example.smartfarm.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -10,10 +12,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
-import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
+import com.example.smartfarm.ui.features.home.presentation.HomeScreen
 import com.example.smartfarm.ui.features.settings.presentation.view.SettingScreen
 import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -48,7 +51,9 @@ fun NavGraph(
             }
 
             composable(Routes.Home.route){
-                HomeScreen()
+                HomeScreen(
+                    onNavigate = { route -> navController.navigate(route) },
+                )
             }
 
             composable(Routes.Weather.route){
