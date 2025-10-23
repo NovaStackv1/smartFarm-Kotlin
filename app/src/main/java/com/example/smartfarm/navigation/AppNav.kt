@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
 import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
+import com.example.smartfarm.ui.features.settings.presentation.view.SettingScreen
 import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 
 @Composable
@@ -87,6 +88,11 @@ fun NavGraph(
 
             composable (Routes.Expenses.route){
                 FinanceScreen()
+
+            }
+
+            composable (Routes.Settings.route){
+                SettingScreen()
 
             }
 
