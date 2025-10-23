@@ -1,6 +1,7 @@
 package com.example.smartfarm.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -24,7 +25,7 @@ sealed class BottomRoutes(
     val route: String
 ){
     object Home : BottomRoutes("Home", Icons.Default.Home, Routes.Home.route)
-    object Weather : BottomRoutes("Weather", Icons.Default.Home, Routes.Weather.route)
+    object Weather : BottomRoutes("Weather", Icons.Default.CloudQueue, Routes.Weather.route)
     object Expenses : BottomRoutes("Expenses", Icons.Default.Home, Routes.Expenses.route)
 
     companion object{
