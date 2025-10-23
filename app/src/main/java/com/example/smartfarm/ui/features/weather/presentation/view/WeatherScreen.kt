@@ -11,7 +11,7 @@ fun WeatherScreen(
 ) {
     Column {
         Text(
-            text = "Wherther Screen"
+            text = "Weather Screen"
         )
     }
 }
