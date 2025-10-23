@@ -38,13 +38,13 @@ fun WeatherContent(weatherData: WeatherData) {
 
         // 3-Day Forecast
         Text(
-            text = "Next 3 Days",
+            text = "Next 5 Days",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        ForecastSection(forecasts = weatherData.forecastDays.take(3))
+        ForecastSection(forecasts = weatherData.forecastDays.take(5))
 
         // Farming Advice
         Text(

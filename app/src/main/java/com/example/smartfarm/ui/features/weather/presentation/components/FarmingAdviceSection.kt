@@ -7,7 +7,9 @@ import androidx.compose.ui.unit.dp
 import com.example.smartfarm.ui.features.weather.domain.models.FarmingAdvice
 
 @Composable
-fun FarmingAdviceSection(adviceList: List<FarmingAdvice>) {
+fun FarmingAdviceSection(
+    adviceList: List<FarmingAdvice>
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {

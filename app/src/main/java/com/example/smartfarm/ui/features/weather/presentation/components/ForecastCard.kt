@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.example.smartfarm.ui.features.weather.domain.models.ForecastDayUi
 
 @Composable
-fun ForecastCard(forecast: ForecastDayUi) {
+fun ForecastCard(
+    forecast: ForecastDayUi
+) {
     var isPressed by remember { mutableStateOf(false) }
     
     val scale by animateFloatAsState(

@@ -97,7 +97,7 @@ fun SmartFarmTheme(
         }
 
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else -> DarkColorScheme
     }
 
 

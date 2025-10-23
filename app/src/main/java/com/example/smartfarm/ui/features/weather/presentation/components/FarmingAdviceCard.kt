@@ -50,7 +50,7 @@ fun FarmingAdviceCard(advice: FarmingAdvice) {
                     AdviceType.INFO -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
                 }
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            //elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Row(
                 modifier = Modifier
