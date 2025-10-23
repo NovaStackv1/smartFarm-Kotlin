@@ -1,9 +1,7 @@
-// data/mapper/WeatherMapper.kt
 package com.example.smartfarm.ui.features.weather.data.mapper
 
-import com.example.smartfarm.ui.features.weather.data.models.CurrentWeather
-import com.example.smartfarm.ui.features.weather.data.models.ForecastDay
-import com.example.smartfarm.ui.features.weather.data.models.WeatherResponse
+import com.example.smartfarm.ui.features.weather.data.models.AccuWeatherCurrentConditions
+import com.example.smartfarm.ui.features.weather.data.models.AccuWeatherForecastResponse
 import com.example.smartfarm.ui.features.weather.domain.models.AdviceType
 import com.example.smartfarm.ui.features.weather.domain.models.FarmingAdvice
 import com.example.smartfarm.ui.features.weather.domain.models.ForecastDayUi
@@ -12,59 +10,84 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
-fun WeatherResponse.toWeatherData(): WeatherData {
+fun AccuWeatherForecastResponse.toWeatherData(
+    locationName: String,
+    currentConditions: AccuWeatherCurrentConditions? = null
+): WeatherData {
+    val currentTemp = currentConditions?.Temperature?.Metric?.Value?.roundToInt() ?: 0
+    val condition = currentConditions?.WeatherText ?: DailyForecasts.firstOrNull()?.Day?.IconPhrase ?: "Unknown"
+    val humidity = currentConditions?.RelativeHumidity ?: 50
+    val windSpeed = currentConditions?.Wind?.Speed?.Value?.roundToInt() ?: 0
+    val precipChance = DailyForecasts.firstOrNull()?.Day?.PrecipitationProbability ?: 0
+    val feelsLike = currentConditions?.RealFeelTemperature?.Metric?.Value?.roundToInt() ?: currentTemp
+    val uv = currentConditions?.UVIndex?.toDouble() ?: 0.0
+
     return WeatherData(
-        location = location.name,
-        region = location.region,
-        country = location.country,
-        currentTemp = current.tempC.roundToInt(),
-        condition = current.condition.text,
-        humidity = current.humidity,
-        windSpeed = current.windKph.roundToInt(),
-        precipChance = (current.precipMm * 10).roundToInt().coerceIn(0, 100),
-        feelsLike = current.feelsLikeC.roundToInt(),
-        uv = current.uv,
-        forecastDays = forecast.forecastDay.map { it.toForecastDayUi() },
-        farmingAdvice = generateFarmingAdvice(current, forecast.forecastDay)
+        location = locationName,
+        region = "", // AccuWeather doesn't provide this directly in forecast
+        country = "", // We'll get this from location search
+        currentTemp = currentTemp,
+        condition = condition,
+        humidity = humidity,
+        windSpeed = windSpeed,
+        precipChance = precipChance,
+        feelsLike = feelsLike,
+        uv = uv,
+        forecastDays = DailyForecasts.map { it.toForecastDayUi() },
+        farmingAdvice = generateAccuWeatherFarmingAdvice(currentConditions, DailyForecasts)
     )
 }
 
-fun ForecastDay.toForecastDayUi(): ForecastDayUi {
-    val dayName = date.toDayName()
+fun com.example.smartfarm.ui.features.weather.data.models.DailyForecast.toForecastDayUi(): ForecastDayUi {
+    val dayName = Date.toDayName()
+    val maxTemp = Temperature.Maximum.toCelsius().roundToInt()
+    val minTemp = Temperature.Minimum.toCelsius().roundToInt()
+
     return ForecastDayUi(
         dayName = dayName,
-        date = date,
-        maxTemp = day.maxTempC.roundToInt(),
-        minTemp = day.minTempC.roundToInt(),
-        condition = day.condition.text,
-        conditionCode = day.condition.code,
-        precipChance = day.dailyChanceOfRain,
-        humidity = day.avgHumidity
+        date = Date,
+        maxTemp = maxTemp,
+        minTemp = minTemp,
+        condition = Day.IconPhrase,
+        conditionCode = Day.Icon, // Using AccuWeather icon codes
+        precipChance = Day.PrecipitationProbability ?: 0,
+        humidity = 50 // AccuWeather doesn't provide daily humidity in basic forecast
     )
 }
 
 private fun String.toDayName(): String {
     return try {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH)
         val date = sdf.parse(this)
         val dayFormat = SimpleDateFormat("EEE", Locale.ENGLISH)
         date?.let { dayFormat.format(it) } ?: this
     } catch (e: Exception) {
-        this
+        // Try alternative format
+        try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+            val date = sdf.parse(this)
+            val dayFormat = SimpleDateFormat("EEE", Locale.ENGLISH)
+            date?.let { dayFormat.format(it) } ?: this
+        } catch (e2: Exception) {
+            this
+        }
     }
 }
 
-private fun generateFarmingAdvice(
-    current: CurrentWeather,
-    forecast: List<ForecastDay>
+private fun generateAccuWeatherFarmingAdvice(
+    current: AccuWeatherCurrentConditions?,
+    forecast: List<com.example.smartfarm.ui.features.weather.data.models.DailyForecast>
 ): List<FarmingAdvice> {
     val advice = mutableListOf<FarmingAdvice>()
-    
-    // Check today's weather
-    val todayCondition = current.condition.code
-    
-    // Sunny day advice (codes: 1000)
-    if (todayCondition == 1000) {
+
+    val currentTemp = current?.Temperature?.Metric?.Value ?: 0.0
+    val currentHumidity = current?.RelativeHumidity ?: 50
+    val currentCondition = current?.WeatherText ?: ""
+    val currentUV = current?.UVIndex ?: 0
+
+    // Check current conditions
+    if (currentCondition.contains("Sunny", ignoreCase = true) ||
+        currentCondition.contains("Clear", ignoreCase = true)) {
         advice.add(
             FarmingAdvice(
                 message = "Sunny day ahead. It's a good time for planting maize and beans.",
@@ -73,9 +96,9 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // High humidity warning
-    if (current.humidity > 70) {
+    if (currentHumidity > 70) {
         advice.add(
             FarmingAdvice(
                 message = "With high humidity, remember to check crops for early signs of fungal diseases.",
@@ -84,11 +107,11 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // Check upcoming warm days
     val upcomingDays = forecast.take(3)
-    val hasWarmDays = upcomingDays.any { it.day.maxTempC > 28 }
-    
+    val hasWarmDays = upcomingDays.any { it.Temperature.Maximum.toCelsius() > 28 }
+
     if (hasWarmDays) {
         advice.add(
             FarmingAdvice(
@@ -98,9 +121,9 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // Rain forecast advice
-    val upcomingRain = upcomingDays.any { it.day.dailyChanceOfRain > 60 }
+    val upcomingRain = upcomingDays.any { it.Day.PrecipitationProbability ?: 0 > 60 }
     if (upcomingRain) {
         advice.add(
             FarmingAdvice(
@@ -110,9 +133,9 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // Low temperature warning
-    val coldDays = upcomingDays.any { it.day.minTempC < 12 }
+    val coldDays = upcomingDays.any { it.Temperature.Minimum.toCelsius() < 12 }
     if (coldDays) {
         advice.add(
             FarmingAdvice(
@@ -122,9 +145,9 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // UV index advice
-    if (current.uv > 6) {
+    if (currentUV > 6) {
         advice.add(
             FarmingAdvice(
                 message = "High UV index today. Good for drying harvested crops, but protect yourself.",
@@ -133,10 +156,10 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // Dry period advice
-    val dryPeriod = upcomingDays.all { it.day.dailyChanceOfRain < 20 }
-    if (dryPeriod && current.precipMm < 1) {
+    val dryPeriod = upcomingDays.all { it.Day.PrecipitationProbability ?: 0 < 20 }
+    if (dryPeriod) {
         advice.add(
             FarmingAdvice(
                 message = "Dry spell expected. Plan irrigation schedule and mulch to retain soil moisture.",
@@ -145,9 +168,12 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     // Optimal conditions for harvesting
-    if (todayCondition == 1000 && current.humidity < 60 && current.windKph < 20) {
+    if ((currentCondition.contains("Sunny", ignoreCase = true) ||
+                currentCondition.contains("Clear", ignoreCase = true)) &&
+        currentHumidity < 60 &&
+        (current?.Wind?.Speed?.Value ?: 0.0) < 20) {
         advice.add(
             FarmingAdvice(
                 message = "Perfect conditions for harvesting and threshing grain crops.",
@@ -156,6 +182,6 @@ private fun generateFarmingAdvice(
             )
         )
     }
-    
+
     return advice.sortedBy { it.priority }.take(5)
 }
