@@ -1,5 +1,6 @@
 package com.example.smartfarm.ui.features.weather.presentation.view
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -35,36 +36,36 @@ fun WeatherScreen(
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Weather Updates",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+
+        TopAppBar(
+            title = {
+                Text(
+                    "Weather Updates",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
                 )
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Navigate back"
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface
             )
-        }
-    ) { paddingValues ->
+        )
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = { viewModel.refreshWeather() },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             when (val state = uiState) {
                 is WeatherUiState.Loading -> {

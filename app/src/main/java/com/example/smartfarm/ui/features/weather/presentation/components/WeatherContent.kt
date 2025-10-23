@@ -19,11 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 @Composable
-fun WeatherContent(weatherData: WeatherData) {
+fun WeatherContent(
+    weatherData: WeatherData,
+    modifier: Modifier = Modifier
+) {
     var isExpanded by remember { mutableStateOf(false) }
     
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),

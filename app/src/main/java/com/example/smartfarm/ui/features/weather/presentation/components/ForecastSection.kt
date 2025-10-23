@@ -17,7 +17,9 @@ fun ForecastSection(
         contentPadding = PaddingValues(horizontal = 4.dp)
     ) {
         items(forecasts) { forecast ->
-            ForecastCard(forecast = forecast)
+            ForecastCard(
+                forecast = forecast
+            )
         }
     }
 }
