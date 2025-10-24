@@ -23,7 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
-import com.example.smartfarm.ui.features.home.presentation.HomeScreen
+import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
 import com.example.smartfarm.ui.features.settings.presentation.view.SettingsScreen
 import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 import kotlinx.coroutines.launch
