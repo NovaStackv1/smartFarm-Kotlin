@@ -34,7 +34,8 @@ import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -69,6 +70,9 @@ fun CurrentWeatherCard(
             .fillMaxWidth()
             .clickable { onExpandChange() },
         shape = RoundedCornerShape(24.dp),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface
+//        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
@@ -77,8 +81,8 @@ fun CurrentWeatherCard(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            MaterialTheme.colorScheme.secondaryContainer
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.onPrimaryContainer.copy(0.1f)
                         )
                     )
                 )
@@ -152,10 +156,12 @@ fun CurrentWeatherCard(
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
-                    Column(modifier = Modifier.padding(top = 16.dp)) {
-                        Divider(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f),
-                            modifier = Modifier.padding(vertical = 8.dp)
+                    Column(
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            thickness = DividerDefaults.Thickness, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),

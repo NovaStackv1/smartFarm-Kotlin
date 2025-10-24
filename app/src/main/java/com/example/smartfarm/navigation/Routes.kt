@@ -17,6 +17,11 @@ sealed class Routes(
     object Expenses : Routes("expenses", true)
     object Weather : Routes("weather", true)
     object Settings : Routes("settings", true)
+    object Profile : Routes("profile", false)
+    object FarmPreferences : Routes("farm_preferences", false)
+    object AccountSettings : Routes("account_settings", false)
+    object HelpSupport : Routes("help_support", false)
+
 }
 
 ///////////////////////////////////////////////////////////////////////////

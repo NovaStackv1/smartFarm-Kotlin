@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ErrorState(
     message: String,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier =modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(

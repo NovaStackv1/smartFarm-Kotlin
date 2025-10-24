@@ -45,12 +45,11 @@ fun FarmingAdviceCard(advice: FarmingAdvice) {
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = when (advice.type) {
-                    AdviceType.POSITIVE -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    AdviceType.WARNING -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
-                    AdviceType.INFO -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                    AdviceType.POSITIVE -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                    AdviceType.WARNING -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+                    AdviceType.INFO -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
                 }
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            )
         ) {
             Row(
                 modifier = Modifier

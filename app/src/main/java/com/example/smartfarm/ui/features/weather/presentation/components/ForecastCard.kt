@@ -28,10 +28,22 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.smartfarm.ui.features.weather.domain.models.ForecastDayUi
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun ForecastCard(forecast: ForecastDayUi) {
+fun ForecastCard(
+    forecast: ForecastDayUi
+) {
     var isPressed by remember { mutableStateOf(false) }
+
+
+    val currentDayName = remember {
+        SimpleDateFormat("EEE", Locale.getDefault()).format(Date())
+    }
+
+    val isToday = forecast.dayName.equals(currentDayName, ignoreCase = true)
     
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.95f else 1f,
@@ -54,8 +66,8 @@ fun ForecastCard(forecast: ForecastDayUi) {
             },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (forecast.dayName == "Tue") {
-                MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = if (isToday) {
+                MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
             }
@@ -73,21 +85,33 @@ fun ForecastCard(forecast: ForecastDayUi) {
                 text = forecast.dayName,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isToday) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
 
             Icon(
                 imageVector = getWeatherIcon(forecast.condition),
                 contentDescription = forecast.condition,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = if (isToday) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
 
             Text(
                 text = "${forecast.maxTemp}°/${forecast.minTemp}°",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isToday) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
         }
     }

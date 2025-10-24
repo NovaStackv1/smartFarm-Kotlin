@@ -19,11 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 @Composable
-fun WeatherContent(weatherData: WeatherData) {
+fun WeatherContent(
+    weatherData: WeatherData,
+    modifier: Modifier = Modifier
+) {
     var isExpanded by remember { mutableStateOf(false) }
     
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
@@ -38,13 +41,13 @@ fun WeatherContent(weatherData: WeatherData) {
 
         // 3-Day Forecast
         Text(
-            text = "Next 3 Days",
+            text = "Next 5 Days",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        ForecastSection(forecasts = weatherData.forecastDays.take(3))
+        ForecastSection(forecasts = weatherData.forecastDays.take(5))
 
         // Farming Advice
         Text(
