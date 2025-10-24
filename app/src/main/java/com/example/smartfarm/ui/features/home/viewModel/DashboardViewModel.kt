@@ -1,25 +1,19 @@
 package com.example.smartfarm.ui.features.home.viewModel
 
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartfarm.ui.features.home.model.*
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import java.text.SimpleDateFormat
+import java.util.*
 
-@HiltViewModel
-class DashboardViewModel @Inject constructor(
-    // TODO: Inject repositories when ready
-    // private val weatherRepository: WeatherRepository,
-    // private val financeRepository: FinanceRepository
-) : ViewModel() {
+class DashboardViewModel : ViewModel() {
 
     private val _dashboardState = MutableStateFlow<DashboardState>(DashboardState.Loading)
     val dashboardState: StateFlow<DashboardState> = _dashboardState.asStateFlow()
@@ -34,16 +28,14 @@ class DashboardViewModel @Inject constructor(
     fun loadDashboardData() {
         viewModelScope.launch {
             _dashboardState.value = DashboardState.Loading
-
             try {
                 // Simulate network delay
                 delay(1000)
 
-                // TODO: Replace with actual data from repositories
-                val mockData = createMockDashboardData()
-                _dashboardState.value = DashboardState.Success(mockData)
+                val dashboardData = getSampleDashboardData()
+                _dashboardState.value = DashboardState.Success(dashboardData)
             } catch (e: Exception) {
-                _dashboardState.value = DashboardState.Error(e.message ?: "Unknown error")
+                _dashboardState.value = DashboardState.Error(e.message ?: "Failed to load dashboard data")
             }
         }
     }
@@ -51,102 +43,173 @@ class DashboardViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            delay(1500) // Simulate refresh
-            loadDashboardData()
-            _isRefreshing.value = false
+            try {
+                // Simulate refresh delay
+                delay(500)
+                loadDashboardData()
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 
-    private fun createMockDashboardData(): DashboardData {
+    private fun getSampleDashboardData(): DashboardData {
         return DashboardData(
-            userName = "TechWhiz",
+            userName = "John Farmer",
             weather = WeatherData(
-                temperature = 24,
-                condition = "Partly Cloudy",
-                location = "Nairobi, Kenya",
+                temperature = 25,
+                condition = "Sunny",
+                location = "Nairobi Farm",
                 humidity = 65,
-                recommendation = "Good day for planting. Soil moisture is optimal.",
-                icon = WeatherIcon.PARTLY_CLOUDY
+                recommendation = "Perfect weather for irrigation. Consider watering crops in the morning.",
+                icon = WeatherIcon.SUNNY
             ),
-            financialSummary = FinancialOverview(
-                totalIncome = 50000.0,
-                totalExpenses = 20000.0,
-                netProfit = 30000.0,
-                profitPercentage = 60f
+            financialSummary = FinancialSummary(
+                balance = 12500.0,
+                revenue = 8500.0,
+                expenses = 3200.0
             ),
-            recentActivities = listOf(
-                RecentActivity(
-                    id = "1",
-                    title = "Maize Sale",
-                    amount = 15000.0,
-                    type = ActivityType.INCOME,
-                    date = "Today",
-                    category = "Crop Sale"
-                ),
-                RecentActivity(
-                    id = "2",
-                    title = "Fertilizer Purchase",
-                    amount = 4500.0,
-                    type = ActivityType.EXPENSE,
-                    date = "Yesterday",
-                    category = "Fertilizer"
-                ),
-                RecentActivity(
-                    id = "3",
-                    title = "Seeds",
-                    amount = 2800.0,
-                    type = ActivityType.EXPENSE,
-                    date = "2 days ago",
-                    category = "Seeds"
-                )
+            recentActivities = getSampleRecentActivities(),
+            farmTips = getSampleFarmTips(),
+            quickActions = getSampleQuickActions()
+        )
+    }
+
+    private fun getSampleRecentActivities(): List<RecentActivity> {
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        return listOf(
+            RecentActivity(
+                id = "1",
+                title = "Maize Sale",
+                amount = 5000.0,
+                type = ActivityType.INCOME,
+                date = dateFormat.format(Date(System.currentTimeMillis() - 86400000)), // Yesterday
+                category = "Crops"
             ),
-            farmTips = listOf(
-                FarmTip(
-                    id = "1",
-                    title = "Pest Alert",
-                    description = "Aphid activity detected. Consider organic pest control.",
-                    priority = TipPriority.HIGH
-                ),
-                FarmTip(
-                    id = "2",
-                    title = "Optimal Planting",
-                    description = "Soil temperature ideal for bean planting this week.",
-                    priority = TipPriority.MEDIUM
-                ),
-                FarmTip(
-                    id = "3",
-                    title = "Water Management",
-                    description = "Rain expected in 3 days. Delay irrigation.",
-                    priority = TipPriority.LOW
-                )
+            RecentActivity(
+                id = "2",
+                title = "Fertilizer Purchase",
+                amount = 1200.0,
+                type = ActivityType.EXPENSE,
+                date = dateFormat.format(Date(System.currentTimeMillis() - 172800000)), // 2 days ago
+                category = "Supplies"
             ),
-            quickActions = listOf(
-                QuickAction(
-                    id = "finances",
-                    title = "Finances",
-                    icon = Icons.Default.AccountBalance,
-                    route = "finance"
-                ),
-                QuickAction(
-                    id = "weather",
-                    title = "Weather",
-                    icon = Icons.Default.Cloud,
-                    route = "weather"
-                ),
-                QuickAction(
-                    id = "settings",
-                    title = "Settings",
-                    icon = Icons.Default.Settings,
-                    route = "settings"
-                ),
-                QuickAction(
-                    id = "profile",
-                    title = "Profile",
-                    icon = Icons.Default.AccountCircle,
-                    route = "account"
-                )
+            RecentActivity(
+                id = "3",
+                title = "Bean Harvest",
+                amount = 3500.0,
+                type = ActivityType.INCOME,
+                date = dateFormat.format(Date(System.currentTimeMillis() - 259200000)), // 3 days ago
+                category = "Crops"
+            ),
+            RecentActivity(
+                id = "4",
+                title = "Irrigation System Maintenance",
+                amount = 800.0,
+                type = ActivityType.EXPENSE,
+                date = dateFormat.format(Date(System.currentTimeMillis() - 345600000)), // 4 days ago
+                category = "Equipment"
             )
         )
+    }
+
+    private fun getSampleFarmTips(): List<FarmTip> {
+        return listOf(
+            FarmTip(
+                id = "1",
+                title = "Soil Testing",
+                description = "Test your soil pH and nutrient levels before planting season to optimize fertilizer use.",
+                priority = TipPriority.HIGH
+            ),
+            FarmTip(
+                id = "2",
+                title = "Water Conservation",
+                description = "Consider drip irrigation to reduce water usage by up to 50% compared to traditional methods.",
+                priority = TipPriority.MEDIUM
+            ),
+            FarmTip(
+                id = "3",
+                title = "Crop Rotation",
+                description = "Rotate your crops annually to prevent soil depletion and reduce pest problems.",
+                priority = TipPriority.MEDIUM
+            ),
+            FarmTip(
+                id = "4",
+                title = "Weather Monitoring",
+                description = "Check weather forecasts regularly to plan irrigation and protect crops from extreme conditions.",
+                priority = TipPriority.LOW
+            )
+        )
+    }
+
+    private fun getSampleQuickActions(): List<QuickAction> {
+        return listOf(
+            QuickAction(
+                id = "1",
+                title = "Irrigation",
+                icon = Icons.Default.WaterDrop,
+                route = "irrigation"
+            ),
+            QuickAction(
+                id = "2",
+                title = "Crops",
+                icon = Icons.Default.Grass,
+                route = "crops"
+            ),
+            QuickAction(
+                id = "3",
+                title = "Finance",
+                icon = Icons.Default.AccountBalance,
+                route = "finance"
+            ),
+            QuickAction(
+                id = "4",
+                title = "Weather",
+                icon = Icons.Default.Cloud,
+                route = "weather"
+            ),
+            QuickAction(
+                id = "5",
+                title = "Inventory",
+                icon = Icons.Default.Inventory,
+                route = "inventory"
+            ),
+            QuickAction(
+                id = "6",
+                title = "Tasks",
+                icon = Icons.Default.Checklist,
+                route = "tasks"
+            )
+        )
+    }
+
+    // Method to update financial data (you can call this when new financial data is available)
+    fun updateFinancialData(newFinancialSummary: FinancialSummary) {
+        val currentState = _dashboardState.value
+        if (currentState is DashboardState.Success) {
+            val updatedData = currentState.data.copy(financialSummary = newFinancialSummary)
+            _dashboardState.value = DashboardState.Success(updatedData)
+        }
+    }
+
+    // Method to add a new activity
+    fun addRecentActivity(activity: RecentActivity) {
+        val currentState = _dashboardState.value
+        if (currentState is DashboardState.Success) {
+            val currentActivities = currentState.data.recentActivities.toMutableList()
+            currentActivities.add(0, activity) // Add to beginning
+            val updatedData = currentState.data.copy(recentActivities = currentActivities)
+            _dashboardState.value = DashboardState.Success(updatedData)
+        }
+    }
+
+    // Method to update weather data
+    fun updateWeatherData(weather: WeatherData) {
+        val currentState = _dashboardState.value
+        if (currentState is DashboardState.Success) {
+            val updatedData = currentState.data.copy(weather = weather)
+            _dashboardState.value = DashboardState.Success(updatedData)
+        }
     }
 }
 
