@@ -64,8 +64,9 @@ fun WelcomeHeader(
 @RequiresApi(Build.VERSION_CODES.O)
 private fun getGreeting(): String {
     return when (LocalTime.now().hour) {
-        in 0..11 -> "Good Morning"
-        in 12..16 -> "Good Afternoon"
-        else -> "Good Evening"
+        in 5..11 -> "Happy Rising" // 5:00 AM to 11:59 AM
+        in 12..16 -> "Hello There" // 12:00 PM to 4:59 PM
+        in 17..21 -> "Good Evening" // 5:00 PM to 9:59 PM
+        else -> "Hey!" // 10:00 PM to 4:59 AM
     }
 }

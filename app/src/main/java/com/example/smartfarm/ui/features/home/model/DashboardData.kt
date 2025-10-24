@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 data class DashboardData(
     val userName: String,
     val weather: WeatherData,
-    val financialSummary: FinancialOverview,
+    val financialSummary: FinancialSummary,
     val recentActivities: List<RecentActivity>,
     val farmTips: List<FarmTip>,
     val quickActions: List<QuickAction>
@@ -69,3 +69,14 @@ data class QuickAction(
     val icon: ImageVector,
     val route: String
 )
+
+
+
+data class FinancialSummary(
+    val balance: Double,
+    val revenue: Double,
+    val expenses: Double
+)
+
+
+
