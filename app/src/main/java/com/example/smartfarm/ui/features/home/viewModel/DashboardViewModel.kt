@@ -1,24 +1,25 @@
 package com.example.smartfarm.ui.features.home.viewModel
 
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smartfarm.ui.features.auth.data.repo.AuthRepository
+import com.example.smartfarm.ui.features.weather.data.repo.WeatherRepository
+import com.example.smartfarm.ui.features.weather.data.remote.ApiResult
 import com.example.smartfarm.ui.features.home.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    // TODO: Inject repositories when ready
-    // private val weatherRepository: WeatherRepository,
-    // private val financeRepository: FinanceRepository
+    private val authRepository: AuthRepository,
+    private val weatherRepository: WeatherRepository,
+    // in future: private val financeRepository: FinanceRepository
 ) : ViewModel() {
 
     private val _dashboardState = MutableStateFlow<DashboardState>(DashboardState.Loading)
@@ -36,14 +37,50 @@ class DashboardViewModel @Inject constructor(
             _dashboardState.value = DashboardState.Loading
 
             try {
-                // Simulate network delay
-                delay(1000)
+                // 1️⃣ Fetch username from AuthRepository (Firebase / UserPrefs)
+                val userName = authRepository.currentUser?.displayName
+                    ?: "Farmer"
 
-                // TODO: Replace with actual data from repositories
-                val mockData = createMockDashboardData()
-                _dashboardState.value = DashboardState.Success(mockData)
+                // 2️⃣ Fetch Weather Data (Realtime via API)
+                var weatherData: WeatherData? = null
+                weatherRepository.getWeatherByLocation("Nairobi").collect { result ->
+                    when (result) {
+                        is ApiResult.Success -> weatherData = result.data
+                        is ApiResult.Error -> throw Exception(result.message)
+                        else -> {}
+                    }
+                }
+
+                // 3️⃣ Fetch Financial Summary (for now, placeholder logic)
+                val financialSummary = FinancialOverview(
+                    totalIncome = 50000.0,
+                    totalExpenses = 20000.0,
+                    netProfit = 30000.0,
+                    profitPercentage = 60f
+                )
+                // Later, connect to FinanceRepository to calculate this
+
+                // 4️⃣ Build final Dashboard data object
+                val dashboardData = DashboardData(
+                    userName = userName,
+                    weather = weatherData ?: WeatherData(
+                        temperature = 0,
+                        condition = "N/A",
+                        location = "Unknown",
+                        humidity = 0,
+                        recommendation = "No data available",
+                        icon = WeatherIcon.CLOUDY
+                    ),
+                    financialSummary = financialSummary,
+                    recentActivities = emptyList(), // TODO: connect later
+                    farmTips = emptyList(), // can stay dynamic/static
+                    quickActions = defaultQuickActions()
+                )
+
+                _dashboardState.value = DashboardState.Success(dashboardData)
+
             } catch (e: Exception) {
-                _dashboardState.value = DashboardState.Error(e.message ?: "Unknown error")
+                _dashboardState.value = DashboardState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -51,103 +88,17 @@ class DashboardViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            delay(1500) // Simulate refresh
             loadDashboardData()
             _isRefreshing.value = false
         }
     }
 
-    private fun createMockDashboardData(): DashboardData {
-        return DashboardData(
-            userName = "TechWhiz",
-            weather = WeatherData(
-                temperature = 24,
-                condition = "Partly Cloudy",
-                location = "Nairobi, Kenya",
-                humidity = 65,
-                recommendation = "Good day for planting. Soil moisture is optimal.",
-                icon = WeatherIcon.PARTLY_CLOUDY
-            ),
-            financialSummary = FinancialOverview(
-                totalIncome = 50000.0,
-                totalExpenses = 20000.0,
-                netProfit = 30000.0,
-                profitPercentage = 60f
-            ),
-            recentActivities = listOf(
-                RecentActivity(
-                    id = "1",
-                    title = "Maize Sale",
-                    amount = 15000.0,
-                    type = ActivityType.INCOME,
-                    date = "Today",
-                    category = "Crop Sale"
-                ),
-                RecentActivity(
-                    id = "2",
-                    title = "Fertilizer Purchase",
-                    amount = 4500.0,
-                    type = ActivityType.EXPENSE,
-                    date = "Yesterday",
-                    category = "Fertilizer"
-                ),
-                RecentActivity(
-                    id = "3",
-                    title = "Seeds",
-                    amount = 2800.0,
-                    type = ActivityType.EXPENSE,
-                    date = "2 days ago",
-                    category = "Seeds"
-                )
-            ),
-            farmTips = listOf(
-                FarmTip(
-                    id = "1",
-                    title = "Pest Alert",
-                    description = "Aphid activity detected. Consider organic pest control.",
-                    priority = TipPriority.HIGH
-                ),
-                FarmTip(
-                    id = "2",
-                    title = "Optimal Planting",
-                    description = "Soil temperature ideal for bean planting this week.",
-                    priority = TipPriority.MEDIUM
-                ),
-                FarmTip(
-                    id = "3",
-                    title = "Water Management",
-                    description = "Rain expected in 3 days. Delay irrigation.",
-                    priority = TipPriority.LOW
-                )
-            ),
-            quickActions = listOf(
-                QuickAction(
-                    id = "finances",
-                    title = "Finances",
-                    icon = Icons.Default.AccountBalance,
-                    route = "finance"
-                ),
-                QuickAction(
-                    id = "weather",
-                    title = "Weather",
-                    icon = Icons.Default.Cloud,
-                    route = "weather"
-                ),
-                QuickAction(
-                    id = "settings",
-                    title = "Settings",
-                    icon = Icons.Default.Settings,
-                    route = "settings"
-                ),
-                QuickAction(
-                    id = "profile",
-                    title = "Profile",
-                    icon = Icons.Default.AccountCircle,
-                    route = "account"
-                )
-            )
-        )
-    }
+    private fun defaultQuickActions(): List<QuickAction> = listOf(
+        QuickAction("finances", "Finances", androidx.compose.material.icons.Icons.Default.AccountBalance, "finance"),
+        QuickAction("weather", "Weather", androidx.compose.material.icons.Icons.Default.Cloud, "weather"),
+        QuickAction("settings", "Settings", androidx.compose.material.icons.Icons.Default.Settings, "settings"),
+        QuickAction("profile", "Profile", androidx.compose.material.icons.Icons.Default.AccountCircle, "account")
+    )
 }
 
 sealed class DashboardState {
