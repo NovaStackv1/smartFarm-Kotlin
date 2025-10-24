@@ -64,21 +64,15 @@ fun GoogleSignInButton(
                 horizontalArrangement = Arrangement.Center
             ) {
                 // Google Icon
-                Surface(
-                    modifier = Modifier.size(24.dp),
-                    shape = CircleShape,
-                    color = Color.White
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.google),
-                            contentDescription = null,
-                        )
-                    }
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.google),
+                    contentDescription = "Google",
+                    //modifier = Modifier.size(20.dp),
+                    tint = Color.Unspecified
+                )
+
                 Spacer(modifier = Modifier.width(12.dp))
+
                 Text(
                     text = "Sign in with Google",
                     style = MaterialTheme.typography.bodyLarge.copy(

@@ -16,6 +16,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
@@ -33,6 +37,16 @@ class AuthRepository @Inject constructor(
     }
 
     val currentUser: FirebaseUser? get() = firebaseAuth.currentUser
+//    val currentUser: StateFlow<FirebaseUser?> = firebaseAuth.currentUser
+//        .map { user ->
+//            Timber.d("AuthRepository: authStateChanged -> ${user?.uid ?: "null"}")
+//            user
+//        }
+//        .stateIn(
+//            scope = CoroutineScope(Dispatchers.IO),
+//            started = SharingStarted.WhileSubscribed(5000),
+//            initialValue = firebaseAuth.currentUser
+//        )
     val isLoggedIn = userPreferences.isLoggedIn
 
     /**
