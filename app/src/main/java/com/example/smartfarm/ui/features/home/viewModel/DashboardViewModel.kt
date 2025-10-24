@@ -59,7 +59,7 @@ class DashboardViewModel @Inject constructor(
 
     private fun createMockDashboardData(): DashboardData {
         return DashboardData(
-            userName = "John Kamau",
+            userName = "TechWhiz",
             weather = WeatherData(
                 temperature = 24,
                 condition = "Partly Cloudy",
@@ -134,16 +134,16 @@ class DashboardViewModel @Inject constructor(
                     route = "weather"
                 ),
                 QuickAction(
-                    id = "crops",
-                    title = "Crops",
-                    icon = Icons.Default.Agriculture,
-                    route = "crops"
+                    id = "settings",
+                    title = "Settings",
+                    icon = Icons.Default.Settings,
+                    route = "settings"
                 ),
                 QuickAction(
-                    id = "market",
-                    title = "Market",
-                    icon = Icons.Default.Store,
-                    route = "market"
+                    id = "profile",
+                    title = "Profile",
+                    icon = Icons.Default.AccountCircle,
+                    route = "account"
                 )
             )
         )
