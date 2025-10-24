@@ -39,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -63,9 +62,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.smartfarm.R
 import com.example.smartfarm.ui.features.profile.viewModel.ProfileViewModel
-import com.example.smartfarm.ui.features.profile.viewModel.UserData
+import com.example.smartfarm.ui.features.profile.modle.UserData
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -247,24 +247,29 @@ private fun ProfileHeader(userData: UserData?) {
                     .clickable { isPressed = true },
                 contentAlignment = Alignment.Center
             ) {
-                if (userData?.profilePictureUrl != null) {
-                    // Load profile picture from URL
-                    Image(
-                        painter = rememberAsyncImagePainter(userData.profilePictureUrl),
-                        contentDescription = "Profile picture",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    // Default cute avatar
-                    Image(
-                        painter = painterResource(id = R.drawable.farmbrigelogo),
-                        contentDescription = "Default avatar",
-                        modifier = Modifier.size(80.dp)
-                    )
-                }
+                AsyncImage(
+                    model = userData?.profilePictureUrl,
+                    contentDescription = "User Profile Picture",
+                    modifier = Modifier.fillMaxSize(),
+                )
+//                if (userData?.profilePictureUrl != null) {
+//                    // Load profile picture from URL
+//                    Image(
+//                        painter = rememberAsyncImagePainter(userData.profilePictureUrl),
+//                        contentDescription = "Profile picture",
+//                        modifier = Modifier
+//                            .size(120.dp)
+//                            .clip(CircleShape),
+//                        contentScale = ContentScale.Crop
+//                    )
+//                } else {
+//                    // Default cute avatar
+//                    Image(
+//                        painter = painterResource(id = R.drawable.farmbrigelogo),
+//                        contentDescription = "Default avatar",
+//                        modifier = Modifier.size(80.dp)
+//                    )
+//                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -373,7 +378,11 @@ private fun UserInfoCard(userData: UserData?) {
 }
 
 @Composable
-private fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String) {
+private fun InfoRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    value: String
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically

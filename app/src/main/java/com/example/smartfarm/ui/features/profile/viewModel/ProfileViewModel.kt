@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smartfarm.ui.features.profile.modle.ProfileState
+import com.example.smartfarm.ui.features.profile.modle.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,20 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-
-data class UserData(
-    val name: String? = null,
-    val email: String? = null,
-    val phone: String? = null,
-    val profilePictureUrl: String? = null,
-    val joinDate: String? = null
-)
-
-data class ProfileState(
-    val userData: UserData? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -48,11 +36,14 @@ class ProfileViewModel @Inject constructor(
                     val userDoc = firestore.collection("users").document(currentUser.uid).get().await()
                     
                     val userData = UserData(
-                        name = userDoc.getString("name") ?: currentUser.displayName ?: "Smart Farmer",
+                        name = userDoc.getString("name") ?: currentUser.displayName
+                        ?: "Smart Farmer",
                         email = currentUser.email ?: "No email",
                         phone = userDoc.getString("phone"),
-                        profilePictureUrl = userDoc.getString("profilePictureUrl") ?: currentUser.photoUrl?.toString(),
-                        joinDate = userDoc.getTimestamp("createdAt")?.toDate()?.toString() ?: "Recently"
+                        profilePictureUrl = userDoc.getString("profilePictureUrl")
+                            ?: currentUser.photoUrl?.toString(),
+                        joinDate = userDoc.getTimestamp("createdAt")?.toDate()?.toString()
+                            ?: "Recently"
                     )
                     
                     _uiState.value = _uiState.value.copy(
