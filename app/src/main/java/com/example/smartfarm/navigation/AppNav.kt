@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -24,7 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
-import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
+import com.example.smartfarm.ui.features.home.presentation.HomeScreen
 import com.example.smartfarm.ui.features.settings.presentation.view.SettingsScreen
 import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 import kotlinx.coroutines.launch
@@ -97,7 +96,9 @@ fun NavGraph(
             }
 
             composable(Routes.Home.route){
-                HomeScreen()
+                HomeScreen(
+                    onNavigate = { route -> navController.navigate(route) },
+                )
             }
 
             composable(Routes.Weather.route){
