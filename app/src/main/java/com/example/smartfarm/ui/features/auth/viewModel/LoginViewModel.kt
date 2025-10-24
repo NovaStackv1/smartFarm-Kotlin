@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.smartfarm.ui.features.auth.data.repo.AuthRepository
 import com.example.smartfarm.ui.features.auth.data.repo.AuthResult
 import com.example.smartfarm.ui.features.auth.domain.model.AuthState
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,11 +20,12 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
+    //val currentUser: StateFlow<FirebaseUser?> = authRepository.currentUser as StateFlow<FirebaseUser?>
 
     init {
         checkAuthStatus()
@@ -37,8 +39,12 @@ class LoginViewModel @Inject constructor(
             authRepository.isLoggedIn.collect { isLoggedIn ->
                 if (isLoggedIn && authRepository.currentUser != null) {
                     Timber.tag(TAG).d("User already logged in, navigating to dashboard")
+
                     _authState.value = AuthState.Authenticated
                     _navigationEvent.emit(NavigationEvent.NavigateToDashboard)
+                } else {
+                    Timber.tag(TAG).d("User not logged in, showing login screen")
+                    _authState.value = AuthState.Idle
                 }
             }
         }
