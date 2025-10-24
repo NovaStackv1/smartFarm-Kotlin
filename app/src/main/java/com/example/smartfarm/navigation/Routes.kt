@@ -2,11 +2,9 @@ package com.example.smartfarm.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Routes(
@@ -19,6 +17,11 @@ sealed class Routes(
     object Expenses : Routes("expenses", true)
     object Weather : Routes("weather", true)
     object Settings : Routes("settings", true)
+    object Profile : Routes("profile", false)
+    object FarmPreferences : Routes("farm_preferences", false)
+    object AccountSettings : Routes("account_settings", false)
+    object HelpSupport : Routes("help_support", false)
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -29,8 +32,8 @@ sealed class BottomRoutes(
     val icon: ImageVector,
     val route: String
 ){
-    object Home : BottomRoutes("Dashboard", Icons.Default.Home, Routes.Home.route)
-    object Weather : BottomRoutes("Weather", Icons.Default.Cloud, Routes.Weather.route)
+    object Home : BottomRoutes("Home", Icons.Default.Home, Routes.Home.route)
+    object Weather : BottomRoutes("Weather", Icons.Default.CloudQueue, Routes.Weather.route)
     object Expenses : BottomRoutes("Expenses", Icons.Default.AccountBalanceWallet, Routes.Expenses.route)
 
     object Settings : BottomRoutes("Settings", Icons.Default.Settings, Routes.Settings.route)

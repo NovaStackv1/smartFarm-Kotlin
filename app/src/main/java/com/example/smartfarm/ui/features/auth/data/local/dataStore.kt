@@ -43,4 +43,17 @@ class UserPreferences @Inject constructor(
     }
 
     fun getUserId(): Flow<String?> = context.dataStore.data.map { it[PreferencesKeys.USER_ID] }
+
+    fun getUserInfo(): Flow<UserInfo?> = context.dataStore.data.map { preferences ->
+        val userId = preferences[PreferencesKeys.USER_ID]
+        val email = preferences[PreferencesKeys.USER_EMAIL]
+        val name = preferences[PreferencesKeys.USER_NAME]
+
+        if (userId != null && email != null && name != null) {
+            UserInfo(userId, email, name)
+        } else null
+    }
 }
+
+data class UserInfo(val userId: String, val email: String, val name: String)
+

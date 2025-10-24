@@ -1,19 +1,17 @@
 package com.example.smartfarm.ui.features.auth.viewModel
 
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartfarm.ui.features.auth.data.repo.AuthRepository
 import com.example.smartfarm.ui.features.auth.data.repo.AuthResult
 import com.example.smartfarm.ui.features.auth.domain.model.AuthState
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,10 +29,14 @@ class LoginViewModel @Inject constructor(
         checkAuthStatus()
     }
 
+    /**
+     * Check if user is already logged in on app start
+     */
     private fun checkAuthStatus() {
         viewModelScope.launch {
             authRepository.isLoggedIn.collect { isLoggedIn ->
                 if (isLoggedIn && authRepository.currentUser != null) {
+                    Timber.tag(TAG).d("User already logged in, navigating to dashboard")
                     _authState.value = AuthState.Authenticated
                     _navigationEvent.emit(NavigationEvent.NavigateToDashboard)
                 }
@@ -42,24 +44,38 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun signInWithGoogle(account: GoogleSignInAccount) {
+    /**
+     * Sign in with Google using Credential Manager
+     */
+    fun signInWithGoogle(context: Context) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            
-            when (val result = authRepository.signInWithGoogle(account)) {
+
+            when (val result = authRepository.signInWithGoogle(context)) {
                 is AuthResult.Success -> {
+                    Timber.tag(TAG).d("Sign-in successful: ${result.user.email}")
                     _authState.value = AuthState.Authenticated
                     _navigationEvent.emit(NavigationEvent.NavigateToDashboard)
                 }
                 is AuthResult.Error -> {
+                    Timber.tag(TAG).e("Sign-in failed: ${result.message}")
                     _authState.value = AuthState.Error(result.message)
                 }
             }
         }
     }
 
+    /**
+     * Clear error state
+     */
     fun clearError() {
-        _authState.value = AuthState.Idle
+        if (_authState.value is AuthState.Error) {
+            _authState.value = AuthState.Idle
+        }
+    }
+
+    companion object {
+        private const val TAG = "LoginViewModel"
     }
 }
 
