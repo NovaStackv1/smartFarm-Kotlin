@@ -38,5 +38,5 @@ release/
 *.jks
 *.keystore
 
- app/release/app-release.apk
- /app/google-services.json
+app/release/app-release.apk
+/app/google-services.json
