@@ -1,18 +1,28 @@
 package com.example.smartfarm.ui.features.farmpreferences.presentation.view
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.smartfarm.ui.features.farmpreferences.domain.models.*
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.smartfarm.ui.features.farmpreferences.domain.models.FarmLocation
+import com.example.smartfarm.ui.features.farmpreferences.presentation.components.FarmForm
+import com.example.smartfarm.ui.features.farmpreferences.presentation.viewModel.AddEditFarmViewModel
 import com.example.smartfarm.utils.rememberMapLocationState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,148 +97,5 @@ fun AddEditFarmScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         )
-    }
-}
-
-@Composable
-fun FarmForm(
-    uiState: AddEditFarmViewModel.AddEditFarmUiState,
-    onFarmNameChange: (String) -> Unit,
-    onSizeChange: (Double) -> Unit,
-    onCropTypesChange: (List<CropType>) -> Unit,
-    onSoilTypeChange: (SoilType) -> Unit,
-    onIrrigationChange: (IrrigationMethod) -> Unit,
-    onLocationClick: () -> Unit,
-    onSetDefaultChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Farm Name
-        OutlinedTextField(
-            value = uiState.farm.name,
-            onValueChange = onFarmNameChange,
-            label = { Text("Farm Name") },
-            modifier = Modifier.fillMaxWidth(),
-            isError = uiState.errors.contains(AddEditFarmViewModel.FormError.NAME_EMPTY)
-        )
-
-        // Location
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onLocationClick() },
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Location",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Farm Location",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = uiState.farm.location.name.ifEmpty { "Tap to select location on map" },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-
-        // Farm Size
-        OutlinedTextField(
-            value = uiState.farm.size.toString(),
-            onValueChange = { 
-                val size = it.toDoubleOrNull() ?: 0.0
-                onSizeChange(size)
-            },
-            label = { Text("Farm Size (acres)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Crop Types (Multi-select)
-        Text("Crop Types", style = MaterialTheme.typography.bodyLarge)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            CropType.entries.forEach { cropType ->
-                val isSelected = uiState.farm.cropTypes.contains(cropType)
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { 
-                        val newSelection = if (isSelected) {
-                            uiState.farm.cropTypes - cropType
-                        } else {
-                            uiState.farm.cropTypes + cropType
-                        }
-                        onCropTypesChange(newSelection)
-                    },
-                    label = { Text(cropType.name) }
-                )
-            }
-        }
-
-        // Soil Type
-        Text("Soil Type", style = MaterialTheme.typography.bodyLarge)
-        Column {
-            SoilType.entries.forEach { soilType ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onSoilTypeChange(soilType) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = uiState.farm.soilType == soilType,
-                        onClick = { onSoilTypeChange(soilType) }
-                    )
-                    Text(soilType.name)
-                }
-            }
-        }
-
-        // Irrigation Method
-        Text("Irrigation Method", style = MaterialTheme.typography.bodyLarge)
-        Column {
-            IrrigationMethod.entries.forEach { method ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onIrrigationChange(method) },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = uiState.farm.irrigationMethod == method,
-                        onClick = { onIrrigationChange(method) }
-                    )
-                    Text(method.name)
-                }
-            }
-        }
-
-        // Set as Default
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = uiState.farm.isDefault,
-                onCheckedChange = onSetDefaultChange
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Set as default farm for weather updates")
-        }
     }
 }

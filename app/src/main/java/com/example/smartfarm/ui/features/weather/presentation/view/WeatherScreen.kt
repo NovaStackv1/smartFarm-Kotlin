@@ -2,14 +2,13 @@ package com.example.smartfarm.ui.features.weather.presentation.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -18,8 +17,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.smartfarm.ui.features.weather.presentation.components.ErrorState
+import com.example.smartfarm.ui.features.weather.presentation.components.FarmLocationSelector
 import com.example.smartfarm.ui.features.weather.presentation.components.LoadingState
 import com.example.smartfarm.ui.features.weather.presentation.components.WeatherContent
 import com.example.smartfarm.ui.features.weather.presentation.viewModel.WeatherUiState
@@ -31,10 +31,14 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun WeatherScreen(
     onNavigateBack: () -> Unit,
-    viewModel: WeatherViewModel = hiltViewModel()
+    onNavigateToFarmPreferences: () -> Unit,
+    weatherViewModel: WeatherViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val uiState by weatherViewModel.uiState.collectAsState()
+    val isRefreshing by weatherViewModel.isRefreshing.collectAsState()
+    val currentFarm by weatherViewModel.currentFarm.collectAsState()
+    val availableFarms by weatherViewModel.availableFarms.collectAsState()
+
 
     Column (
         modifier = Modifier
@@ -48,6 +52,13 @@ fun WeatherScreen(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                currentFarm?.let { farm ->
+                    Text(
+                        farm.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
@@ -57,13 +68,31 @@ fun WeatherScreen(
                     )
                 }
             },
+            actions = {
+                // Farm Location Selector
+                if (availableFarms.isNotEmpty()) {
+                    FarmLocationSelector(
+                        farms = availableFarms,
+                        currentFarm = currentFarm,
+                        onFarmSelected = { farm -> weatherViewModel.selectFarm(farm) },
+                        onManageFarms = onNavigateToFarmPreferences
+                    )
+                }
+
+                IconButton(onClick = onNavigateToFarmPreferences) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Farm Settings"
+                    )
+                }
+            },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
         )
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { viewModel.refreshWeather() },
+            onRefresh = { weatherViewModel.refreshWeather() },
             modifier = Modifier
                 .fillMaxSize()
         ) {
@@ -77,7 +106,7 @@ fun WeatherScreen(
                 is WeatherUiState.Error -> {
                     ErrorState(
                         message = state.message,
-                        onRetry = { viewModel.refreshWeather() }
+                        onRetry = { weatherViewModel.refreshWeather() }
                     )
                 }
             }

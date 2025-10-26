@@ -28,6 +28,7 @@ import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.auth.viewModel.LoginViewModel
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
 import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
+import com.example.smartfarm.ui.features.profile.view.ProfileScreen
 import com.example.smartfarm.ui.features.settings.presentation.view.SettingsScreen
 import com.example.smartfarm.ui.features.weather.presentation.view.WeatherScreen
 import kotlinx.coroutines.launch
@@ -134,7 +135,8 @@ fun NavGraph(
                 WeatherScreen(
                     onNavigateBack = {
                         navController.navigateUp()
-                    }
+                    },
+                    onNavigateToFarmPreferences = showComingSoonSnackbar
                 )
 
             }

@@ -1,4 +1,3 @@
-// AddEditFarmViewModel.kt
 package com.example.smartfarm.ui.features.farmpreferences.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
@@ -108,23 +107,4 @@ class AddEditFarmViewModel @Inject constructor(
             }
         }
     }
-}
-
-data class AddEditFarmUiState(
-    val farm: Farm = Farm(
-        id = "",
-        name = "",
-        location = FarmLocation(),
-        size = 0.0,
-        cropTypes = emptyList(),
-        soilType = SoilType.LOAM,
-        irrigationMethod = IrrigationMethod.DRIP,
-        isDefault = false
-    ),
-    val errors: Set<FormError> = emptySet()
-)
-
-enum class FormError {
-    NAME_EMPTY,
-    LOCATION_EMPTY
 }
