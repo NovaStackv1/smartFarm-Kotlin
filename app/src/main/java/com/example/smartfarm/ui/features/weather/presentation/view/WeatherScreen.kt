@@ -63,7 +63,9 @@ fun WeatherScreen(
                 }
             },
             navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
+                IconButton(
+                    onClick = onNavigateBack
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Navigate back"
@@ -81,7 +83,9 @@ fun WeatherScreen(
                     )
                 }
 
-                IconButton(onClick = onNavigateToFarmPreferences) {
+                IconButton(
+                    onClick = onNavigateToFarmPreferences
+                ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "Farm Settings"

@@ -54,6 +54,8 @@ fun ForecastCard(
         label = "scaleAnimation"
     )
 
+    val isDayTime = true
+
     Card(
         modifier = Modifier
             .width(140.dp)
@@ -92,15 +94,11 @@ fun ForecastCard(
                 }
             )
 
-            Icon(
-                imageVector = getWeatherIcon(forecast.condition),
-                contentDescription = forecast.condition,
+            CustomWeatherIcon(
+                weatherIcon = mapWeatherConditionToIcon(forecast.condition, isDayTime),
                 modifier = Modifier.size(48.dp),
-                tint = if (isToday) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
+                iconSize = 48.dp,
+                isDayTime = isDayTime
             )
 
             Text(

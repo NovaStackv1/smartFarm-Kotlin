@@ -91,7 +91,7 @@ private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.w
     val user = FirebaseAuth.getInstance().currentUser
     val userName = user?.displayName ?: "Farmer"
 
-    val isDayTime = true //isCurrentlyDayTime()
+    val isDayTime = isCurrentlyDayTime()
 
     return DashboardData(
         userName = userName,
