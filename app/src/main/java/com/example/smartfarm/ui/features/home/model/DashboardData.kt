@@ -23,10 +23,15 @@ data class WeatherData(
 
 enum class WeatherIcon {
     SUNNY,
-    PARTLY_CLOUDY,
+    MOON,
+    PARTLY_CLOUDY_DAY,  // Sun with clouds
+    PARTLY_CLOUDY_NIGHT, // Moon with clouds
     CLOUDY,
     RAINY,
-    STORMY
+    STORMY,
+    SNOWY,
+    FOGGY,
+    WINDY
 }
 
 data class FinancialOverview(

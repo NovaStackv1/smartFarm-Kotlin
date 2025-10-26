@@ -91,15 +91,24 @@ private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.w
     val user = FirebaseAuth.getInstance().currentUser
     val userName = user?.displayName ?: "Farmer"
 
+    val isDayTime = true //isCurrentlyDayTime()
+
     return DashboardData(
         userName = userName,
-        weather = weatherData.toHomeWeatherData(), // Use our mapper
+        weather = weatherData.toHomeWeatherData(isDayTime), // Use our mapper
         financialSummary = getFinancialSummary(),
         recentActivities = getRecentActivities(),
         farmTips = generateFarmTipsFromWeather(weatherData),
         quickActions = getQuickActions()
     )
 }
+
+// Simple heuristic to determine day/night
+private fun isCurrentlyDayTime(): Boolean {
+    val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    return currentHour in 6..18 // 6 AM to 6 PM considered daytime
+}
+
 
 /**
  * Mock data - replace with actual data from your finance module

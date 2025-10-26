@@ -23,7 +23,8 @@ import com.example.smartfarm.ui.features.home.model.WeatherIcon
 @Composable
 fun WeatherCard(
     weather: WeatherData,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDayTime: Boolean = true
 ) {
     Card(
         modifier = modifier
@@ -58,13 +59,14 @@ fun WeatherCard(
                         Row(
                             verticalAlignment = Alignment.Top
                         ) {
-                            Icon(
-                                imageVector = getWeatherIcon(weather.icon),
-                                contentDescription = weather.condition,
+                            CustomWeatherIcon(
+                                weatherIcon = weather.icon,
                                 modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                                isDayTime = isDayTime
                             )
+
                             Spacer(modifier = Modifier.width(8.dp))
+
                             Text(
                                 text = "${weather.temperature}°C",
                                 style = MaterialTheme.typography.displaySmall,
@@ -140,12 +142,12 @@ fun WeatherCard(
     }
 }
 
-private fun getWeatherIcon(icon: WeatherIcon): ImageVector {
-    return when (icon) {
-        WeatherIcon.SUNNY -> Icons.Default.WbSunny
-        WeatherIcon.PARTLY_CLOUDY -> Icons.Default.WbCloudy
-        WeatherIcon.CLOUDY -> Icons.Default.Cloud
-        WeatherIcon.RAINY -> Icons.Default.Thunderstorm
-        WeatherIcon.STORMY -> Icons.Default.Bolt
-    }
-}
+//private fun getWeatherIcon(icon: WeatherIcon): ImageVector {
+//    return when (icon) {
+//        WeatherIcon.SUNNY -> Icons.Default.WbSunny
+//        WeatherIcon.PARTLY_CLOUDY -> Icons.Default.WbCloudy
+//        WeatherIcon.CLOUDY -> Icons.Default.Cloud
+//        WeatherIcon.RAINY -> Icons.Default.Thunderstorm
+//        WeatherIcon.STORMY -> Icons.Default.Bolt
+//    }
+//}
