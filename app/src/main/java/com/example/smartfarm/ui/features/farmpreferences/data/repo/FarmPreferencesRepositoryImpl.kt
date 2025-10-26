@@ -3,7 +3,6 @@ package com.example.smartfarm.ui.features.farmpreferences.data.repo
 import com.example.smartfarm.ui.features.farmpreferences.data.local.dao.FarmDao
 import com.example.smartfarm.ui.features.farmpreferences.data.mapper.toDomain
 import com.example.smartfarm.ui.features.farmpreferences.data.mapper.toEntity
-
 import com.example.smartfarm.ui.features.farmpreferences.domain.models.Farm
 import com.example.smartfarm.ui.features.farmpreferences.domain.repo.FarmPreferencesRepository
 import kotlinx.coroutines.flow.Flow
@@ -31,8 +30,9 @@ class FarmPreferencesRepositoryImpl @Inject constructor(
     override suspend fun saveFarm(farm: Farm, userId: String) {
         val entity = farm.toEntity(userId)
         farmDao.insertFarm(entity)
-        
+
         if (farm.isDefault) {
+            farmDao.clearDefaultFarms(userId)
             farmDao.setDefaultFarm(farm.id, userId)
         }
     }

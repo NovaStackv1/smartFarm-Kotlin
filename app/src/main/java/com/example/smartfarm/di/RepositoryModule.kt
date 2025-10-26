@@ -1,5 +1,7 @@
 package com.example.smartfarm.di
 
+import com.example.smartfarm.ui.features.farmpreferences.data.repo.FarmPreferencesRepositoryImpl
+import com.example.smartfarm.ui.features.farmpreferences.domain.repo.FarmPreferencesRepository
 import com.example.smartfarm.ui.features.weather.data.repo.WeatherRepository
 import com.example.smartfarm.ui.features.weather.data.repo.WeatherRepositoryImpl
 import dagger.Binds
@@ -17,4 +19,11 @@ abstract class RepositoryModule {
     abstract fun bindWeatherRepository(
         weatherRepositoryImpl: WeatherRepositoryImpl
     ): WeatherRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFarmPreferencesRepository(
+        farmPreferencesRepositoryImpl: FarmPreferencesRepositoryImpl
+    ): FarmPreferencesRepository
+
 }
