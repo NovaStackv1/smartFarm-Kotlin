@@ -16,7 +16,9 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun EmptyFarmsState(onAddFarm: () -> Unit) {
+fun EmptyFarmsState(
+    onAddFarm: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()

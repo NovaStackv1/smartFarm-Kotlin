@@ -24,8 +24,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
 import com.example.smartfarm.ui.features.auth.viewModel.LoginViewModel
+import com.example.smartfarm.ui.features.farmpreferences.domain.models.FarmLocation
+import com.example.smartfarm.ui.features.farmpreferences.presentation.view.AddEditFarmScreen
+import com.example.smartfarm.ui.features.farmpreferences.presentation.view.FarmPreferencesScreen
+import com.example.smartfarm.ui.features.farmpreferences.presentation.view.MapSelectionScreen
 import com.example.smartfarm.ui.features.finance.presentation.view.FinanceScreen
 import com.example.smartfarm.ui.features.home.presentation.view.HomeScreen
 import com.example.smartfarm.ui.features.profile.view.ProfileScreen
@@ -136,7 +141,9 @@ fun NavGraph(
                     onNavigateBack = {
                         navController.navigateUp()
                     },
-                    onNavigateToFarmPreferences = showComingSoonSnackbar
+                    onNavigateToFarmPreferences = {
+                        navController.navigate(Routes.FarmPreferences.route)
+                    },
                 )
 
             }
@@ -155,7 +162,9 @@ fun NavGraph(
                     onNavigateToProfile = {
                         navController.navigate(Routes.Profile.route)
                     },
-                    onNavigateToFarmPreferences = showComingSoonSnackbar,
+                    onNavigateToFarmPreferences = {
+                        navController.navigate(Routes.FarmPreferences.route)
+                    },
                     onNavigateToAccountSettings = showComingSoonSnackbar,
                     onNavigateToHelpSupport = showComingSoonSnackbar,
                     onNavigateToNotifications = showComingSoonSnackbar,
@@ -180,7 +189,106 @@ fun NavGraph(
 
             }
 
+            composable(Routes.FarmPreferences.route){
+                FarmPreferencesScreen(
+                    onNavigateBack = {
+                        navController.navigateUp()
+                    },
+                    onNavigateToAddFarm = {
+                        navController.navigate("${Routes.AddEditFarm.route}?farmId=")
+                    },
+                    onNavigateToEditFarm = { farmId ->
+                        navController.navigate("${Routes.AddEditFarm.route}?farmId=$farmId")
+                    },
+                )
+            }
+
+            composable(
+                route = "${Routes.AddEditFarm.route}?farmId={farmId}",
+                arguments = listOf(
+                    navArgument("farmId") {
+                        defaultValue = ""
+                        type = androidx.navigation.NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val farmId = backStackEntry.arguments?.getString("farmId") ?: ""
+
+                AddEditFarmScreen(
+                    farmId = if (farmId.isBlank()) null else farmId,
+                    onNavigateBack = { navController.navigateUp() },
+                    navController = navController,
+                    onNavigateToMap = { initialLocation ->
+                        // Pass initial location to map screen
+                        val locationString = initialLocation?.toRouteString() ?: "null"
+                        navController.navigate("${Routes.MapSelection.route}/$locationString")
+                    }
+                )
+            }
+
+            composable(
+                route = "${Routes.MapSelection.route}/{initialLocation}",
+                arguments = listOf(
+                    navArgument("initialLocation") {
+                        type = androidx.navigation.NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val initialLocationString = backStackEntry.arguments?.getString("initialLocation") ?: "null"
+                val initialLocation = initialLocationString.toFarmLocation()
+
+                MapSelectionScreen(
+                    initialLocation = initialLocation,
+                    onLocationSelected = { location ->
+
+                        // FarmLocation is now Parcelable, so this should work
+                        // Pass selected location back to AddEditFarmScreen
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "selectedLocation",
+                            location
+                        )
+                        navController.popBackStack()
+                    },
+                    onNavigateBack = { navController.navigateUp() }
+                )
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 
+}
+
+
+// Extension functions for FarmLocation serialization
+private fun FarmLocation.toRouteString(): String {
+    return "${this.latitude},${this.longitude},${this.name},${this.address}"
+}
+
+private fun String.toFarmLocation(): FarmLocation? {
+    if (this == "null") return null
+    val parts = this.split(",")
+    return if (parts.size >= 4) {
+        FarmLocation(
+            latitude = parts[0].toDoubleOrNull() ?: 0.0,
+            longitude = parts[1].toDoubleOrNull() ?: 0.0,
+            name = parts[2],
+            address = parts[3]
+        )
+    } else {
+        null
+    }
 }

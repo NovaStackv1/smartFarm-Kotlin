@@ -77,7 +77,7 @@ fun FarmPreferencesScreen(
                 FarmsList(
                     farms = farms,
                     onSetDefault = { farmId -> farmPreferencesViewModel.setDefaultFarm(farmId) },
-                    onEditFarm = onNavigateToEditFarm,
+                    onEditFarm = { farmId -> onNavigateToEditFarm(farmId) },
                     onDeleteFarm = { farmId -> farmPreferencesViewModel.deleteFarm(farmId) }
                 )
             }

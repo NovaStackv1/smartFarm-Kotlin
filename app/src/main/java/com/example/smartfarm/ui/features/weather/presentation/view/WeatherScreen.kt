@@ -47,17 +47,19 @@ fun WeatherScreen(
 
         TopAppBar(
             title = {
-                Text(
-                    "Weather Updates",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                currentFarm?.let { farm ->
+                Column {
                     Text(
-                        farm.name,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        "Weather Updates",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
+                    currentFarm?.let { farm ->
+                        Text(
+                            farm.name,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             },
             navigationIcon = {

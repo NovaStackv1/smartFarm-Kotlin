@@ -17,24 +17,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.smartfarm.ui.features.farmpreferences.domain.models.FarmLocation
 import com.example.smartfarm.ui.features.farmpreferences.presentation.components.FarmForm
 import com.example.smartfarm.ui.features.farmpreferences.presentation.viewModel.AddEditFarmViewModel
-import com.example.smartfarm.utils.rememberMapLocationState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditFarmScreen(
     farmId: String? = null,
     onNavigateBack: () -> Unit,
+    navController: NavController,
     onNavigateToMap: (FarmLocation?) -> Unit,
     addEditFarmViewModel: AddEditFarmViewModel = hiltViewModel()
 ) {
     val uiState by addEditFarmViewModel.uiState.collectAsState()
-    val mapLocationState = rememberMapLocationState()
+    //val mapLocationState = rememberMapLocationState()
+
+    // Listen for location selection from map
+    val selectedLocation by navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow<FarmLocation?>("selectedLocation", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
 
     // Load farm data if editing
     LaunchedEffect(farmId) {
@@ -44,11 +54,16 @@ fun AddEditFarmScreen(
     }
 
     // Handle map location selection
-    LaunchedEffect(mapLocationState.selectedLocation) {
-        mapLocationState.selectedLocation?.let { location ->
+    LaunchedEffect(selectedLocation) {
+        println("DEBUG: selectedLocation changed: $selectedLocation")
+        selectedLocation?.let { location ->
+            println("DEBUG: Updating location in ViewModel: $location")
             addEditFarmViewModel.updateLocation(location)
+            // Clear the saved location to avoid reprocessing
+            navController.currentBackStackEntry?.savedStateHandle?.remove<FarmLocation>("selectedLocation")
         }
     }
+
 
     Scaffold(
         topBar = {

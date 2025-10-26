@@ -44,10 +44,12 @@ class AddEditFarmViewModel @Inject constructor(
     }
 
     fun updateLocation(location: FarmLocation) {
+        println("DEBUG: ViewModel updateLocation called with: $location")
         _uiState.value = _uiState.value.copy(
             farm = _uiState.value.farm.copy(location = location),
             errors = _uiState.value.errors - FormError.LOCATION_EMPTY
         )
+        println("DEBUG: ViewModel state after update: ${_uiState.value.farm.location}")
     }
 
     fun updateSize(size: Double) {

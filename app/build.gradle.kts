@@ -9,6 +9,10 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     alias(libs.plugins.google.gms.google.services)
+
+    //parcelize location
+    //alias(libs.plugins.kotlin.parcelize)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -27,12 +31,22 @@ android {
         val keysProperties = Properties()
         if (keysPropertiesFile.exists()) {
             keysProperties.load(FileInputStream(keysPropertiesFile))
+        } else {
+            println("WARNING: keys.properties file not found!")
         }
 
         buildConfigField(
             "String",
             "WEATHER_API_KEY",
             "\"${keysProperties.getProperty("WEATHER_API_KEY", "")}\""
+        )
+
+        manifestPlaceholders["MAP_API_KEY"] = keysProperties.getProperty("MAP_API_KEY", "")
+
+        buildConfigField(
+            "String",
+            "MAP_API_KEY",
+            "\"${keysProperties.getProperty("MAP_API_KEY", "")}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -148,4 +162,14 @@ dependencies {
 
     // SwipeRefresh for Compose
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:6.12.1")
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // Optional: Places API for better location search
+    implementation("com.google.android.libraries.places:places:5.0.0")
+
+
 }
