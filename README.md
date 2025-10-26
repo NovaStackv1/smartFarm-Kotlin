@@ -15,6 +15,8 @@ Create a file named `keys.properties` in the root directory with the following c
 # Sign up and get your API key, then paste it below
 WEATHER_API_KEY=your_api_key_here
 
+MAP_API_KEY="your_google_maps_api_key_here"
+
 ```
 
 ### Explanation of Properties
@@ -61,6 +63,14 @@ android {
             "String",
             "WEATHER_API_KEY",
             "\"${keysProperties.getProperty("WEATHER_API_KEY", "")}\""
+        )
+
+         manifestPlaceholders["MAP_API_KEY"] = keysProperties.getProperty("MAP_API_KEY", "")
+
+        buildConfigField(
+            "String",
+            "MAP_API_KEY",
+            "\"${keysProperties.getProperty("MAP_API_KEY", "")}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
