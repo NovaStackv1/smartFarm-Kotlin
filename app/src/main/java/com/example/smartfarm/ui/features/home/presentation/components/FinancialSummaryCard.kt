@@ -1,6 +1,7 @@
 // features/home/presentation/components/FinancialSummaryCard.kt
 package com.example.smartfarm.ui.features.home.presentation.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
@@ -12,8 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.ui.features.home.model.FinancialSummary
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun FinancialSummaryCard(
     financial: FinancialSummary,
@@ -23,8 +25,8 @@ fun FinancialSummaryCard(
     var animationPlayed by remember { mutableStateOf(false) }
 
     // Calculate profit percentage for progress bar (0-100)
-    val profitPercentage = if (financial.revenue > 0) {
-        ((financial.revenue - financial.expenses) / financial.revenue * 100).toFloat()
+    val profitPercentage = if (financial.profit > 0) {
+        ((financial.profit - financial.totalExpenses) / financial.profit * 100).toFloat()
     } else {
         0f
     }
@@ -82,12 +84,12 @@ fun FinancialSummaryCard(
             ) {
                 FinancialItem(
                     label = "Total Revenue",
-                    amount = financial.revenue,
+                    amount = financial.profit,
                     color = Color(0xFF4CAF50)
                 )
                 FinancialItem(
                     label = "Total Expenses",
-                    amount = financial.expenses,
+                    amount = financial.totalExpenses,
                     color = Color(0xFFF44336)
                 )
             }
@@ -114,15 +116,15 @@ fun FinancialSummaryCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "KES ${String.format("%,.0f", financial.balance)}",
+                        text = "KES ${String.format("%,.0f", financial.period)}",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (financial.balance >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                        color = if (financial.profit>= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
                     )
                 }
 
                 // Profit/Loss indicator
-                val netProfit = financial.revenue - financial.expenses
+                val netProfit = financial.profit - financial.totalExpenses
                 Text(
                     text = if (netProfit >= 0) "+KES ${String.format("%,.0f", netProfit)}"
                     else "-KES ${String.format("%,.0f", -netProfit)}",

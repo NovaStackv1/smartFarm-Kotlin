@@ -2,6 +2,7 @@ package com.example.smartfarm.ui.features.home.model
 
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 data class DashboardData(
@@ -56,11 +57,11 @@ data class QuickAction(
 
 
 
-data class FinancialSummary(
-    val balance: Double,
-    val revenue: Double,
-    val expenses: Double
-)
+//data class FinancialSummary(
+//    val balance: Double,
+//    val revenue: Double,
+//    val expenses: Double
+//)f
 
 
 

@@ -1,6 +1,8 @@
 package com.example.smartfarm.ui.features.finance.presentation.components
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -11,15 +13,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.ui.features.finance.model.Transaction
-import com.example.smartfarm.ui.features.finance.model.TransactionType
+import com.example.smartfarm.ui.features.finance.domain.model.Transaction
+import com.example.smartfarm.ui.features.finance.domain.model.TransactionCategory
+import com.example.smartfarm.ui.features.finance.domain.model.TransactionType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionDialog(
+    farmName: String,
     onDismiss: () -> Unit,
     onSave: (Transaction) -> Unit
 ) {
@@ -39,10 +44,17 @@ fun AddTransactionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(
-                text = "Add Transaction",
-                style = MaterialTheme.typography.headlineSmall
-            )
+            Column {
+                Text(
+                    text = "Add Transaction",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text(
+                    text = "for $farmName",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         },
         text = {
             Column(
@@ -163,7 +175,7 @@ fun AddTransactionDialog(
                             amount = amount.toDoubleOrNull() ?: 0.0,
                             description = description,
                             date = selectedDate,
-                            category = selectedCategory
+                            category = TransactionCategory.valueOf(selectedCategory)
                         )
                         onSave(transaction)
                     }

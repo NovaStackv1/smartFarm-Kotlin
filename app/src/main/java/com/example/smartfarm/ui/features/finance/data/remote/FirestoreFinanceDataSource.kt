@@ -53,9 +53,10 @@ class FirestoreFinanceDataSource @Inject constructor(
             .get()
             .await()
             
-        return snapshot.documents.map { document ->
+        return snapshot.documents.mapNotNull { document ->
             // Convert Firestore document to TransactionEntity
             // Implementation depends on your data structure
+            document.toObject(TransactionEntity::class.java)
         }
     }
 }

@@ -23,7 +23,8 @@ object DatabaseModule {
             context,
             FarmDatabase::class.java,
             "farm_database"
-        ).build()
+        ).fallbackToDestructiveMigration() // For development
+            .build()
     }
 
     @Provides

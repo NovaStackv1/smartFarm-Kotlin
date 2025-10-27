@@ -17,16 +17,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 import com.example.smartfarm.ui.features.home.model.ActivityType
 import com.example.smartfarm.ui.features.home.model.DashboardData
 import com.example.smartfarm.ui.features.home.model.FarmTip
-import com.example.smartfarm.ui.features.home.model.FinancialSummary
 import com.example.smartfarm.ui.features.home.model.QuickAction
 import com.example.smartfarm.ui.features.home.model.RecentActivity
 import com.example.smartfarm.ui.features.home.model.TipPriority
 import com.example.smartfarm.ui.features.home.presentation.components.DashboardContent
-import com.example.smartfarm.ui.features.home.presentation.components.LoadingState
 import com.example.smartfarm.ui.features.home.presentation.components.ErrorState
+import com.example.smartfarm.ui.features.home.presentation.components.LoadingState
 import com.example.smartfarm.ui.features.weather.presentation.viewModel.WeatherUiState
 import com.example.smartfarm.ui.features.weather.presentation.viewModel.WeatherViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -91,15 +91,26 @@ private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.w
     val userName = user?.displayName ?: "Farmer"
 
     val isDayTime = isCurrentlyDayTime()
+    val financialSummary = getRealFinancialSummary()
 
     return DashboardData(
         userName = userName,
         weather = weatherData,
-        financialSummary = getFinancialSummary(),
+        financialSummary = financialSummary,
         recentActivities = getRecentActivities(),
         farmTips = generateFarmTipsFromWeather(weatherData),
         quickActions = getQuickActions()
     )
+}
+
+private fun getRealFinancialSummary(): FinancialSummary {
+    // You can either:
+    // 1. Inject FinanceViewModel in HomeScreen and get data
+    // 2. Create a separate use case for home screen financial data
+    // 3. Use a shared repository
+
+    // For now, return empty - we'll implement this properly
+    return FinancialSummary()
 }
 
 // Simple heuristic to determine day/night
@@ -112,13 +123,13 @@ private fun isCurrentlyDayTime(): Boolean {
 /**
  * Mock data - replace with actual data from your finance module
  */
-private fun getFinancialSummary(): FinancialSummary {
-    return FinancialSummary(
-        balance = 12500.0,
-        revenue = 18000.0,
-        expenses = 5500.0
-    )
-}
+//private fun getFinancialSummary(): FinancialSummary {
+//    return FinancialSummary(
+//        balance = 12500.0,
+//        revenue = 18000.0,
+//        expenses = 5500.0
+//    )
+//}
 
 /**
  * Mock data - replace with actual data from your finance module
