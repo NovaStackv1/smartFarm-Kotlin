@@ -23,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.smartfarm.ui.features.auth.view.LoginScreen
-import com.example.smartfarm.ui.features.auth.viewModel.LoginViewModel
 import com.example.smartfarm.ui.features.farmpreferences.domain.models.FarmLocation
 import com.example.smartfarm.ui.features.farmpreferences.presentation.view.AddEditFarmScreen
 import com.example.smartfarm.ui.features.farmpreferences.presentation.view.FarmPreferencesScreen
