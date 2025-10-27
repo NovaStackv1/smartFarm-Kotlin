@@ -1,4 +1,4 @@
-package com.example.smartfarm.ui.features.weather.domain.models
+package com.example.smartfarm.shared.weather
 
 enum class WeatherIcon {
     SUNNY,

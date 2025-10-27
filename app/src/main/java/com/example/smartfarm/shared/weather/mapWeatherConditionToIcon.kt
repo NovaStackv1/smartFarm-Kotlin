@@ -1,6 +1,4 @@
-package com.example.smartfarm.ui.features.weather.presentation.components
-
-import com.example.smartfarm.ui.features.weather.domain.models.WeatherIcon
+package com.example.smartfarm.shared.weather
 
 /**
  * Maps weather condition string to WeatherIcon with day/night awareness

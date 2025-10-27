@@ -2,6 +2,7 @@ package com.example.smartfarm.ui.features.home.model
 
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 data class DashboardData(
     val userName: String,
@@ -11,28 +12,6 @@ data class DashboardData(
     val farmTips: List<FarmTip>,
     val quickActions: List<QuickAction>
 )
-
-data class WeatherData(
-    val temperature: Int,
-    val condition: String,
-    val location: String,
-    val humidity: Int,
-    val recommendation: String,
-    val icon: WeatherIcon
-)
-
-enum class WeatherIcon {
-    SUNNY,
-    MOON,
-    PARTLY_CLOUDY_DAY,  // Sun with clouds
-    PARTLY_CLOUDY_NIGHT, // Moon with clouds
-    CLOUDY,
-    RAINY,
-    STORMY,
-    SNOWY,
-    FOGGY,
-    WINDY
-}
 
 data class FinancialOverview(
     val totalIncome: Double,

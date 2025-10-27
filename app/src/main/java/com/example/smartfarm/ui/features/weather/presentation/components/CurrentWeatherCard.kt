@@ -46,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.smartfarm.shared.weather.CustomWeatherIcon
+import com.example.smartfarm.shared.weather.mapWeatherConditionToIcon
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 @Composable

@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.smartfarm.ui.features.home.data.mappers.toHomeWeatherData
 import com.example.smartfarm.ui.features.home.model.ActivityType
 import com.example.smartfarm.ui.features.home.model.DashboardData
 import com.example.smartfarm.ui.features.home.model.FarmTip
@@ -95,7 +94,7 @@ private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.w
 
     return DashboardData(
         userName = userName,
-        weather = weatherData.toHomeWeatherData(isDayTime), // Use our mapper
+        weather = weatherData,
         financialSummary = getFinancialSummary(),
         recentActivities = getRecentActivities(),
         farmTips = generateFarmTipsFromWeather(weatherData),
