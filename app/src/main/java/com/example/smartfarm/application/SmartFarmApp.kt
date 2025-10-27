@@ -14,5 +14,11 @@ class SmartFarmApp : Application(){
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+        // Initialize Places SDK if you're using it
+        // Places.initialize(applicationContext, BuildConfig.MAP_API_KEY)
+
+        // Note: For Maps SDK, the initialization is usually automatic
+        // but you can initialize it explicitly if needed
     }
 }

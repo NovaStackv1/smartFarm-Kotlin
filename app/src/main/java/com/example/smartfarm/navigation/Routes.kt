@@ -21,6 +21,9 @@ sealed class Routes(
     object FarmPreferences : Routes("farm_preferences", false)
     object AccountSettings : Routes("account_settings", false)
     object HelpSupport : Routes("help_support", false)
+    object AddEditFarm : Routes("add_edit_farm", false)
+    object MapSelection : Routes("map_selection", false)
+
 
 }
 
