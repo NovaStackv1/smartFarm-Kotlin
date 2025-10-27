@@ -49,4 +49,8 @@ data class FinancialSummary(
     val totalExpenses: Double = 0.0,
     val profit: Double = 0.0,
     val period: String = "All Time" // "This Month", "This Year", etc.
-)
+) {
+    val balance: Double get() = profit
+
+
+}

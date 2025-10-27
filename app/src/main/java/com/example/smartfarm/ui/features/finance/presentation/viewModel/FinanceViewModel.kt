@@ -74,22 +74,39 @@ class FinanceViewModel @Inject constructor(
         loadFinancialSummary(farmId)
     }
 
+//    private fun loadTransactionsForFarm(farmId: String) {
+//        viewModelScope.launch {
+//            getTransactionsUseCase(userId, farmId).collect { transactionsList ->
+//                _transactions.value = transactionsList
+//            }
+//        }
+//    }
+    // In FinanceViewModel.kt - add debug logging
     private fun loadTransactionsForFarm(farmId: String) {
         viewModelScope.launch {
+            println("🔄 DEBUG: Starting to load transactions for farm: $farmId, user: $userId")
             getTransactionsUseCase(userId, farmId).collect { transactionsList ->
+                println("✅ DEBUG: Successfully loaded ${transactionsList.size} transactions")
+                transactionsList.forEach { transaction ->
+                    println("   - ${transaction.type}: ${transaction.description} - KES ${transaction.amount}")
+                }
                 _transactions.value = transactionsList
             }
         }
     }
 
+
+    // In FinanceViewModel.kt - add debug logging for financial summary
     private fun loadFinancialSummary(farmId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                println("💰 DEBUG: Calculating financial summary for farm: $farmId")
                 val summary = getFinancialSummaryUseCase(userId, farmId, "All Time")
+                println("💰 DEBUG: Summary calculated - Income: ${summary.totalIncome}, Expenses: ${summary.totalExpenses}, Profit: ${summary.profit}")
                 _financialSummary.value = summary
             } catch (e: Exception) {
-                // Handle error
+                println("❌ DEBUG: Error calculating financial summary: ${e.message}")
             } finally {
                 _isLoading.value = false
             }
@@ -98,11 +115,24 @@ class FinanceViewModel @Inject constructor(
 
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            val farmId = _selectedFarmId.value ?: return@launch
+            val farmId = _selectedFarmId.value ?: run {
+                println("❌ DEBUG: Cannot add transaction - no farm selected")
+                return@launch
+            }
+            println("➕ DEBUG: Adding transaction: ${transaction.description} for farm: $farmId")
             addTransactionUseCase(userId, farmId, transaction)
-            // Transactions will update automatically via Flow
+            println("✅ DEBUG: Transaction added successfully")
         }
     }
+
+//    fun addTransaction(transaction: Transaction) {
+//        viewModelScope.launch {
+//            val farmId = _selectedFarmId.value ?: return@launch
+//            addTransactionUseCase(userId, farmId, transaction)
+//            // Transactions will update automatically via Flow
+//        }
+//    }
+
 
     fun deleteTransaction(transactionId: String) {
         viewModelScope.launch {

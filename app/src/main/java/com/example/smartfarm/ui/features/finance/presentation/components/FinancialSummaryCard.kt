@@ -96,6 +96,7 @@ fun FinancialSummaryCard(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun SummaryRow(
     label: String,

@@ -39,10 +39,15 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun HomeScreen(
     onNavigate: (String) -> Unit,
-    weatherViewModel: WeatherViewModel = hiltViewModel()
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    financeViewModel: com.example.smartfarm.ui.features.finance.presentation.viewModel.FinanceViewModel = hiltViewModel()
 ) {
     val weatherState by weatherViewModel.uiState.collectAsState()
     val isRefreshing by weatherViewModel.isRefreshing.collectAsState()
+
+    val financialSummary by financeViewModel.financialSummary.collectAsState()
+    val selectedFarmId by financeViewModel.selectedFarmId.collectAsState()
+
 
     LaunchedEffect(Unit) {
         weatherViewModel.loadWeatherByCurrentLocation()
@@ -65,8 +70,9 @@ fun HomeScreen(
                 }
 
                 is WeatherUiState.Success -> {
-                    // Convert weather data to dashboard data
-                    val dashboardData = createDashboardData(state.data)
+                    // Convert weather and financial data to dashboard data
+                    val dashboardData = createDashboardData(state.data, financialSummary)
+
                     DashboardContent(
                         data = dashboardData,
                         onNavigate = onNavigate,
@@ -86,12 +92,12 @@ fun HomeScreen(
 /**
  * Creates DashboardData from WeatherData and other sources
  */
-private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.weather.domain.models.WeatherData): DashboardData {
+private fun createDashboardData(
+    weatherData: com.example.smartfarm.ui.features.weather.domain.models.WeatherData,
+    financialSummary: FinancialSummary
+): DashboardData {
     val user = FirebaseAuth.getInstance().currentUser
     val userName = user?.displayName ?: "Farmer"
-
-    val isDayTime = isCurrentlyDayTime()
-    val financialSummary = getRealFinancialSummary()
 
     return DashboardData(
         userName = userName,
@@ -102,34 +108,6 @@ private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.w
         quickActions = getQuickActions()
     )
 }
-
-private fun getRealFinancialSummary(): FinancialSummary {
-    // You can either:
-    // 1. Inject FinanceViewModel in HomeScreen and get data
-    // 2. Create a separate use case for home screen financial data
-    // 3. Use a shared repository
-
-    // For now, return empty - we'll implement this properly
-    return FinancialSummary()
-}
-
-// Simple heuristic to determine day/night
-private fun isCurrentlyDayTime(): Boolean {
-    val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-    return currentHour in 6..18 // 6 AM to 6 PM considered daytime
-}
-
-
-/**
- * Mock data - replace with actual data from your finance module
- */
-//private fun getFinancialSummary(): FinancialSummary {
-//    return FinancialSummary(
-//        balance = 12500.0,
-//        revenue = 18000.0,
-//        expenses = 5500.0
-//    )
-//}
 
 /**
  * Mock data - replace with actual data from your finance module

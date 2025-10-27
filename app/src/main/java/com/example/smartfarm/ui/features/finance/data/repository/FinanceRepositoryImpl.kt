@@ -49,52 +49,73 @@ class FinanceRepositoryImpl @Inject constructor(
         firestoreDataSource.syncTransaction(userId, farmId, entity)
     }
 
-    override suspend fun deleteTransaction(userId: String, transactionId: String) {
-        // First get the transaction to know which farm it belongs to for Firestore deletion
-        val transactions = getTransactions(userId, "").first() // Empty farmId to get all (you might need to adjust this)
-        val transactionToDelete = transactions.find { it.id == transactionId }
+//    override suspend fun deleteTransaction(userId: String, transactionId: String) {
+//        // First get the transaction to know which farm it belongs to for Firestore deletion
+//        val transactions = getTransactions(userId, "").first() // Empty farmId to get all (you might need to adjust this)
+//        val transactionToDelete = transactions.find { it.id == transactionId }
+//
+//        transactionDao.deleteTransactionById(transactionId, userId)
+//
+//        // Sync deletion to Firestore
+//        transactionToDelete?.let { transaction ->
+//            firestoreDataSource.deleteTransaction(userId, transaction.farmId, transactionId)
+//        }
+//    }
 
+    // In FinanceRepositoryImpl.kt - fix deleteTransaction properly
+    override suspend fun deleteTransaction(userId: String, transactionId: String) {
+        // Get the transaction first to know which farm it belongs to
+        val transactionEntity = transactionDao.getTransactionById(transactionId, userId)
+
+        // Delete from local database
         transactionDao.deleteTransactionById(transactionId, userId)
 
-        // Sync deletion to Firestore
-        transactionToDelete?.let { transaction ->
+        // Sync deletion to Firestore if we found the transaction
+        transactionEntity?.let { transaction ->
             firestoreDataSource.deleteTransaction(userId, transaction.farmId, transactionId)
         }
     }
 
-//    override suspend fun deleteTransaction(userId: String, transactionId: String) {
-//        transactionDao.deleteTransactionById(transactionId, userId)
-//        firestoreDataSource.deleteTransaction(userId, transactionId)
-//    }
-
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getFinancialSummary(userId: String, farmId: String, period: String): FinancialSummary {
+    override suspend fun getFinancialSummary(
+        userId: String,
+        farmId: String,
+        period: String
+    ): FinancialSummary {
+
         val transactions = getTransactions(userId, farmId).map { it }.first()
-        
-        val (startDate, endDate) = when (period) {
+
+        val filteredTransactions = when (period) {
             "This Month" -> {
                 val now = LocalDate.now()
-                Pair(now.withDayOfMonth(1), now)
+                val startOfMonth = now.withDayOfMonth(1)
+                transactions.filter {
+                    it.date.isAfter(startOfMonth.minusDays(1)) && it.date.isBefore(now.plusDays(1))
+                }
             }
             "This Year" -> {
                 val now = LocalDate.now()
-                Pair(now.withDayOfYear(1), now)
+                val startOfYear = now.withDayOfYear(1)
+                transactions.filter {
+                    it.date.isAfter(startOfYear.minusDays(1)) && it.date.isBefore(now.plusDays(1))
+                }
             }
-            else -> Pair(LocalDate.MIN, LocalDate.MAX)
+            else -> {
+                // For "All Time", use all transactions without date filtering
+                transactions
+            }
         }
-        
-        val filteredTransactions = transactions.filter { 
-            it.date.isAfter(startDate.minusDays(1)) && it.date.isBefore(endDate.plusDays(1)) 
-        }
+
         
         val income = filteredTransactions.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
         val expenses = filteredTransactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
-        
+        val profit = income - expenses
+
         return FinancialSummary(
             farmId = farmId,
             totalIncome = income,
             totalExpenses = expenses,
-            profit = income - expenses,
+            profit = profit,
             period = period
         )
     }

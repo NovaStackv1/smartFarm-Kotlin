@@ -10,7 +10,11 @@ import java.time.LocalDate
 
 @Dao
 interface TransactionDao {
-    
+
+    // In TransactionDao.kt - add this method
+    @Query("SELECT * FROM transactions WHERE id = :transactionId AND userId = :userId")
+    suspend fun getTransactionById(transactionId: String, userId: String): TransactionEntity?
+
     @Query("SELECT * FROM transactions WHERE farmId = :farmId AND userId = :userId ORDER BY date DESC")
     fun getTransactionsByFarm(userId: String, farmId: String): Flow<List<TransactionEntity>>
     

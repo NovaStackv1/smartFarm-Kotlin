@@ -14,7 +14,7 @@ import com.example.smartfarm.ui.features.finance.data.local.entity.TransactionEn
         FarmEntity::class,
     TransactionEntity::class
             ],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 
