@@ -46,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.smartfarm.shared.weather.CustomWeatherIcon
+import com.example.smartfarm.shared.weather.mapWeatherConditionToIcon
 import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
 
 @Composable
@@ -64,6 +66,8 @@ fun CurrentWeatherCard(
         ),
         label = "cloudAnimation"
     )
+
+    val isDayTime = isCurrentlyDayTime()
 
     Card(
         modifier = Modifier
@@ -109,14 +113,16 @@ fun CurrentWeatherCard(
                         )
                     }
 
-                    Icon(
-                        imageVector = getWeatherIcon(weatherData.condition),
-                        contentDescription = weatherData.condition,
+                    CustomWeatherIcon(
+                        weatherIcon = mapWeatherConditionToIcon(weatherData.condition, isDayTime),
                         modifier = Modifier
                             .size(64.dp)
                             .offset(x = cloudOffset.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        iconSize = 64.dp,
+                        isDayTime = isDayTime
                     )
+
+
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -215,4 +221,10 @@ fun CurrentWeatherCard(
             }
         }
     }
+}
+
+// Helper function to determine day/night
+private fun isCurrentlyDayTime(): Boolean {
+    val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    return currentHour in 6..18 // 6 AM to 6 PM considered daytime
 }

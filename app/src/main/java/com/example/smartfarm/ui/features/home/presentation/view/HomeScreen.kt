@@ -17,17 +17,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.smartfarm.ui.features.home.data.mappers.toHomeWeatherData
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 import com.example.smartfarm.ui.features.home.model.ActivityType
 import com.example.smartfarm.ui.features.home.model.DashboardData
 import com.example.smartfarm.ui.features.home.model.FarmTip
-import com.example.smartfarm.ui.features.home.model.FinancialSummary
 import com.example.smartfarm.ui.features.home.model.QuickAction
 import com.example.smartfarm.ui.features.home.model.RecentActivity
 import com.example.smartfarm.ui.features.home.model.TipPriority
 import com.example.smartfarm.ui.features.home.presentation.components.DashboardContent
-import com.example.smartfarm.ui.features.home.presentation.components.LoadingState
 import com.example.smartfarm.ui.features.home.presentation.components.ErrorState
+import com.example.smartfarm.ui.features.home.presentation.components.LoadingState
 import com.example.smartfarm.ui.features.weather.presentation.viewModel.WeatherUiState
 import com.example.smartfarm.ui.features.weather.presentation.viewModel.WeatherViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -40,10 +39,15 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun HomeScreen(
     onNavigate: (String) -> Unit,
-    weatherViewModel: WeatherViewModel = hiltViewModel()
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    financeViewModel: com.example.smartfarm.ui.features.finance.presentation.viewModel.FinanceViewModel = hiltViewModel()
 ) {
     val weatherState by weatherViewModel.uiState.collectAsState()
     val isRefreshing by weatherViewModel.isRefreshing.collectAsState()
+
+    val financialSummary by financeViewModel.financialSummary.collectAsState()
+    val selectedFarmId by financeViewModel.selectedFarmId.collectAsState()
+
 
     LaunchedEffect(Unit) {
         weatherViewModel.loadWeatherByCurrentLocation()
@@ -66,8 +70,9 @@ fun HomeScreen(
                 }
 
                 is WeatherUiState.Success -> {
-                    // Convert weather data to dashboard data
-                    val dashboardData = createDashboardData(state.data)
+                    // Convert weather and financial data to dashboard data
+                    val dashboardData = createDashboardData(state.data, financialSummary)
+
                     DashboardContent(
                         data = dashboardData,
                         onNavigate = onNavigate,
@@ -87,37 +92,20 @@ fun HomeScreen(
 /**
  * Creates DashboardData from WeatherData and other sources
  */
-private fun createDashboardData(weatherData: com.example.smartfarm.ui.features.weather.domain.models.WeatherData): DashboardData {
+private fun createDashboardData(
+    weatherData: com.example.smartfarm.ui.features.weather.domain.models.WeatherData,
+    financialSummary: FinancialSummary
+): DashboardData {
     val user = FirebaseAuth.getInstance().currentUser
     val userName = user?.displayName ?: "Farmer"
 
-    val isDayTime = true //isCurrentlyDayTime()
-
     return DashboardData(
         userName = userName,
-        weather = weatherData.toHomeWeatherData(isDayTime), // Use our mapper
-        financialSummary = getFinancialSummary(),
+        weather = weatherData,
+        financialSummary = financialSummary,
         recentActivities = getRecentActivities(),
         farmTips = generateFarmTipsFromWeather(weatherData),
         quickActions = getQuickActions()
-    )
-}
-
-// Simple heuristic to determine day/night
-private fun isCurrentlyDayTime(): Boolean {
-    val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-    return currentHour in 6..18 // 6 AM to 6 PM considered daytime
-}
-
-
-/**
- * Mock data - replace with actual data from your finance module
- */
-private fun getFinancialSummary(): FinancialSummary {
-    return FinancialSummary(
-        balance = 12500.0,
-        revenue = 18000.0,
-        expenses = 5500.0
     )
 }
 

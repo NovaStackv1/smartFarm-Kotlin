@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.smartfarm.ui.features.farmpreferences.data.local.dao.FarmDao
 import com.example.smartfarm.ui.features.farmpreferences.data.local.FarmDatabase
+import com.example.smartfarm.ui.features.finance.data.local.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,11 +23,19 @@ object DatabaseModule {
             context,
             FarmDatabase::class.java,
             "farm_database"
-        ).build()
+        ).fallbackToDestructiveMigration() // For development
+            .build()
     }
 
     @Provides
     fun provideFarmDao(database: FarmDatabase): FarmDao {
         return database.farmDao()
     }
+
+    @Provides
+    fun provideTransactionDao(database: FarmDatabase): TransactionDao {
+        return database.transactionDao()
+    }
+
+
 }

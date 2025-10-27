@@ -1,6 +1,6 @@
-// features/home/presentation/components/FinancialSummaryCard.kt
 package com.example.smartfarm.ui.features.home.presentation.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
@@ -12,8 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.ui.features.home.model.FinancialSummary
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun FinancialSummaryCard(
     financial: FinancialSummary,
@@ -23,14 +24,14 @@ fun FinancialSummaryCard(
     var animationPlayed by remember { mutableStateOf(false) }
 
     // Calculate profit percentage for progress bar (0-100)
-    val profitPercentage = if (financial.revenue > 0) {
-        ((financial.revenue - financial.expenses) / financial.revenue * 100).toFloat()
+    val profitMargin = if (financial.totalIncome > 0) {
+        (financial.profit / financial.totalIncome * 100).coerceIn(-100.0, 100.0)
     } else {
-        0f
+        0.0
     }
 
     val progress by animateFloatAsState(
-        targetValue = if (animationPlayed) profitPercentage / 100f else 0f,
+        targetValue = if (animationPlayed) (profitMargin / 100.0).toFloat() else 0f,
         animationSpec = tween(durationMillis = 1000),
         label = "progress"
     )
@@ -60,7 +61,7 @@ fun FinancialSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Financial Summary",
+                    text = "Financial Overview",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF4CAF50)
@@ -68,7 +69,7 @@ fun FinancialSummaryCard(
 
                 TextButton(onClick = onViewDetailsClick) {
                     Text(
-                        text = "View All",
+                        text = "View Details",
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -76,18 +77,19 @@ fun FinancialSummaryCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Income and Expenses
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 FinancialItem(
-                    label = "Total Revenue",
-                    amount = financial.revenue,
+                    label = "Total Income",
+                    amount = financial.totalIncome, // FIXED: Use actual income
                     color = Color(0xFF4CAF50)
                 )
                 FinancialItem(
                     label = "Total Expenses",
-                    amount = financial.expenses,
+                    amount = financial.totalExpenses,
                     color = Color(0xFFF44336)
                 )
             }
@@ -101,6 +103,7 @@ fun FinancialSummaryCard(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Net Profit Section
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -108,55 +111,60 @@ fun FinancialSummaryCard(
             ) {
                 Column {
                     Text(
-                        text = "Current Balance:",
+                        text = "Net Profit:",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "KES ${String.format("%,.0f", financial.balance)}",
+                        text = "KES ${String.format("%,.0f", financial.profit)}", // FIXED: Use profit directly
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (financial.balance >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                        color = if (financial.profit >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
                     )
                 }
 
-                // Profit/Loss indicator
-                val netProfit = financial.revenue - financial.expenses
+                // Profit trend indicator (simplified)
                 Text(
-                    text = if (netProfit >= 0) "+KES ${String.format("%,.0f", netProfit)}"
-                    else "-KES ${String.format("%,.0f", -netProfit)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (netProfit >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    text = if (financial.profit >= 0) "📈" else "📉",
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // Profit margin progress bar
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (financial.totalIncome > 0) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Profit Margin:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(8.dp),
+                        color = if (profitMargin >= 0) Color(0xFF4CAF50) else Color(0xFFF44336),
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    Text(
+                        text = "${String.format("%.1f", profitMargin)}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = if (profitMargin >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    )
+                }
+            } else {
                 Text(
-                    text = "Profit Margin:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(8.dp),
-                    color = if (profitPercentage >= 0) Color(0xFF4CAF50) else Color(0xFFF44336),
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
-                Text(
-                    text = "${String.format("%.1f", profitPercentage)}%",
+                    text = "Add transactions to see profit margin",
                     style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = if (profitPercentage >= 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

@@ -1,18 +1,32 @@
 package com.example.smartfarm.ui.features.finance.presentation.components
 
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.ui.features.finance.model.FinancialSummary
+import com.example.smartfarm.ui.features.finance.domain.model.FinancialSummary
 
+@SuppressLint("DefaultLocale")
 @Composable
-fun FinancialSummaryCard(summary: FinancialSummary) {
+fun FinancialSummaryCard(
+    summary: FinancialSummary,
+    farmName: String,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -26,10 +40,25 @@ fun FinancialSummaryCard(summary: FinancialSummary) {
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
+            // Farm Name Header
+            Text(
+                text = farmName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Text(
+                text = "Financial Summary (${summary.period})",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             SummaryRow(
                 label = "Total Income",
                 amount = summary.totalIncome,
-                color = Color(0xFF4CAF50)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
@@ -51,7 +80,7 @@ fun FinancialSummaryCard(summary: FinancialSummary) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Profit",
+                    text = "Net Profit",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -67,6 +96,7 @@ fun FinancialSummaryCard(summary: FinancialSummary) {
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun SummaryRow(
     label: String,

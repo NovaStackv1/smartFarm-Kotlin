@@ -2,27 +2,41 @@ package com.example.smartfarm.ui.features.home.presentation.components
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.smartfarm.ui.features.home.model.WeatherData
-import com.example.smartfarm.ui.features.home.model.WeatherIcon
+import com.example.smartfarm.shared.weather.CustomWeatherIcon
+import com.example.smartfarm.shared.weather.mapWeatherConditionToIcon
+import com.example.smartfarm.ui.features.weather.domain.models.WeatherData
+
 
 @Composable
 fun WeatherCard(
-    weather: WeatherData,
+    weatherData: WeatherData,
     modifier: Modifier = Modifier,
     isDayTime: Boolean = true
 ) {
@@ -60,7 +74,7 @@ fun WeatherCard(
                             verticalAlignment = Alignment.Top
                         ) {
                             CustomWeatherIcon(
-                                weatherIcon = weather.icon,
+                                weatherIcon = mapWeatherConditionToIcon(weatherData.condition, isDayTime),
                                 modifier = Modifier.size(48.dp),
                                 isDayTime = isDayTime
                             )
@@ -68,7 +82,7 @@ fun WeatherCard(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
-                                text = "${weather.temperature}°C",
+                                text = "${weatherData.currentTemp}°C",
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -76,7 +90,7 @@ fun WeatherCard(
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = weather.condition,
+                            text = weatherData.condition,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
@@ -96,7 +110,7 @@ fun WeatherCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = weather.location,
+                                text = weatherData.location,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                             )
@@ -113,7 +127,7 @@ fun WeatherCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "${weather.humidity}%",
+                                text = "${weatherData.humidity}%",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                             )
@@ -131,7 +145,7 @@ fun WeatherCard(
                         .padding(12.dp)
                 ) {
                     Text(
-                        text = weather.recommendation,
+                        text = weatherData.condition,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 20.sp

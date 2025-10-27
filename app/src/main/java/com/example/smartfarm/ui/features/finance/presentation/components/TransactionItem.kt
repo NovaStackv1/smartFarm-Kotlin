@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.smartfarm.ui.features.finance.model.Transaction
-import com.example.smartfarm.ui.features.finance.model.TransactionType
+import com.example.smartfarm.ui.features.finance.domain.model.Transaction
+import com.example.smartfarm.ui.features.finance.domain.model.TransactionType
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -31,7 +31,7 @@ fun DashboardContent(
         }
 
         item {
-            WeatherCard(weather = data.weather)
+            WeatherCard(weatherData = data.weather)
         }
 
         item {
